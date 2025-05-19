@@ -1,0 +1,563 @@
+
+/* ===== Desktop Styles ===== */
+@media (min-width: 769px) {
+.menu2 {
+  width: 320px;
+  height: 27px;
+  position: relative;
+  white-space: pre-wrap;
+  display: inline-block;
+}
+.purple-menu-dot {
+  height: 9px;
+  width: 9px;
+  position: relative;
+  border-radius: 50%;
+  background-color: #39009b;
+}
+.menu1,
+.purple-menu-dot-container {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding: 0 49px;
+}
+.menu1 {
+  width: 364px;
+  height: 94px;
+  overflow: hidden;
+  flex-shrink: 0;
+  flex-direction: column;
+  padding: 23px 6px 28px 38px;
+  box-sizing: border-box;
+  gap: 7px;
+}
+.hero1,
+.marksexton-1-icon {
+  align-self: stretch;
+  overflow: hidden;
+}
+.marksexton-1-icon {
+  position: relative;
+  max-width: 100%;
+  max-height: 100%;
+}
+.hero1 {
+  height: 866px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: flex-start;
+  padding: 30px 45px;
+  box-sizing: border-box;
+  gap: 400px;
+  background-image: url(./public/hero1@3x.png);
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: top;
+  text-align: right;
+  font-size: 21px;
+  color: #000;
+  font-family: "Helvetica Neue";
+}
+.hero-description1 {
+  margin: 0;
+  align-self: stretch;
+  position: relative;
+  font-size: inherit;
+  line-height: 60px;
+  font-weight: 100;
+  font-family: inherit;
+}
+.with-years-of {
+  margin: 0;
+}
+.page-content-text-block {
+  height: 635px;
+  flex: 1;
+  position: relative;
+  line-height: 55px;
+  display: inline-block;
+  min-width: 482px;
+}
+.portfolio-peek-icon1 {
+  width: 424px;
+  border-radius: 209.5px;
+  max-height: 100%;
+  overflow: hidden;
+  flex-shrink: 0;
+  max-width: 100%;
+}
+.content,
+.page-content1 {
+  align-self: stretch;
+  overflow: hidden;
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  max-width: 100%;
+}
+.content {
+  flex: 1;
+  flex-direction: row;
+  gap: 75px;
+  font-size: 21px;
+}
+.page-content1 {
+  height: 1042px;
+  background-color: #fff;
+  flex-shrink: 0;
+  flex-direction: column;
+  padding: 100px;
+  box-sizing: border-box;
+  gap: 50px;
+  text-align: left;
+  font-size: 55px;
+  color: #000;
+  font-family: "Helvetica Neue";
+}
+.foooter-headline1 {
+  margin: 0;
+  position: relative;
+  font-size: inherit;
+  line-height: 70px;
+  font-weight: 100;
+  font-family: inherit;
+}
+.horizontal-line-icon {
+  position: absolute;
+  top: 121.5px;
+  left: 0;
+  max-height: 100%;
+  width: 1193px;
+}
+.infomarksextoncom1 {
+  position: relative;
+  font-size: 21px;
+  line-height: 70px;
+  font-family: "Helvetica Neue";
+  color: #fff;
+  text-align: center;
+}
+.bttn-phone2 {
+  border-radius: 65px;
+  background-color: #000;
+  border: 1px solid #fff;
+  overflow: hidden;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  padding: 0 20px;
+}
+.contact-details {
+  cursor: pointer;
+  border: 0;
+  padding: 0;
+  background-color: transparent;
+  position: absolute;
+  top: 86px;
+  left: 0;
+  height: 126px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+.bttn-phone3 {
+  border-radius: 65px;
+  background-color: #000;
+  border: 1px solid #fff;
+  overflow: hidden;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  padding: 0 31px;
+}
+.contact-details1 {
+  cursor: pointer;
+  border: 0;
+  padding: 0 36px 0 0;
+  background-color: transparent;
+  position: absolute;
+  top: 86px;
+  left: 341px;
+  height: 126px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  box-sizing: border-box;
+}
+.contact-me1 {
+  position: relative;
+  line-height: 70px;
+}
+.bttn-contact1 {
+  position: absolute;
+  top: 30px;
+  left: 660px;
+  border-radius: 91px;
+  background-color: #a120f2;
+  width: 182px;
+  height: 182px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 57px 6px;
+  box-sizing: border-box;
+}
+.footer-contact {
+  width: 1067px;
+  height: 242px;
+  position: relative;
+  overflow: hidden;
+  flex-shrink: 0;
+  text-align: center;
+  font-size: 21px;
+}
+.desktop-home,
+.footer1 {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+.footer1 {
+  align-self: stretch;
+  height: 662px;
+  background-color: #000;
+  overflow: hidden;
+  flex-shrink: 0;
+  align-items: flex-start;
+  padding: 126px 111px;
+  box-sizing: border-box;
+  gap: 10px;
+  text-align: left;
+  font-size: 65px;
+  color: #fff;
+  font-family: "Helvetica Neue";
+}
+.desktop-home {
+  width: 100%;
+  position: relative;
+  align-items: flex-end;
+  line-height: normal;
+  letter-spacing: normal;
+}
+@media screen and (max-width: 1200px) {
+  .portfolio-peek-icon1 {
+    flex: 1;
+  }
+  .content {
+    flex-wrap: wrap;
+  }
+  .footer1 {
+    padding-left: 55px;
+    padding-right: 55px;
+    box-sizing: border-box;
+  }
+}
+@media screen and (max-width: 1050px) {
+  .hero1 {
+    padding-top: 20px;
+    padding-bottom: 20px;
+    box-sizing: border-box;
+  }
+  .hero-description1 {
+    font-size: 44px;
+    line-height: 48px;
+  }
+  .page-content1 {
+    padding-top: 65px;
+    padding-bottom: 65px;
+    box-sizing: border-box;
+  }
+  .foooter-headline1 {
+    font-size: 52px;
+    line-height: 56px;
+  }
+}
+@media screen and (max-width: 750px) {
+  .hero1 {
+    gap: 200px;
+    padding-left: 22px;
+    padding-right: 22px;
+    box-sizing: border-box;
+  }
+  .page-content-text-block {
+    min-width: 100%;
+  }
+  .content {
+    gap: 37px;
+  }
+  .page-content1 {
+    gap: 25px;
+    padding: 42px 50px;
+    box-sizing: border-box;
+  }
+  .footer1 {
+    padding: 82px 27px;
+    box-sizing: border-box;
+  }
+}
+@media screen and (max-width: 450px) {
+  .menu2 {
+    font-size: 17px;
+  }
+  .hero1 {
+    gap: 100px;
+  }
+  .hero-description1 {
+    font-size: 33px;
+    line-height: 36px;
+  }
+  .page-content-text-block {
+    font-size: 17px;
+    line-height: 44px;
+  }
+  .content {
+    gap: 19px;
+  }
+  .page-content1 {
+    padding-left: 20px;
+    padding-right: 20px;
+    box-sizing: border-box;
+  }
+  .foooter-headline1 {
+    font-size: 39px;
+    line-height: 42px;
+  }
+  .contact-me1,
+  .infomarksextoncom1 {
+    font-size: 17px;
+    line-height: 56px;
+  }
+}
+
+}
+
+/* ===== Mobile Styles ===== */
+@media (max-width: 768px) {
+.menu-text {
+  width: 320px;
+  height: 27px;
+  position: relative;
+  display: inline-block;
+}
+.purple-menu-dot-icon {
+  height: 9px;
+  width: 9px;
+  position: relative;
+}
+.menu,
+.purple-menu-dot-wrapper {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: flex-end;
+  padding: 0 22px;
+}
+.menu {
+  width: 364px;
+  height: 94px;
+  overflow: hidden;
+  flex-shrink: 0;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: flex-start;
+  padding: 23px 6px 28px;
+  box-sizing: border-box;
+  gap: 7px;
+}
+.hero,
+.marksextonstacked-1-icon {
+  align-self: stretch;
+  overflow: hidden;
+}
+.marksextonstacked-1-icon {
+  position: relative;
+  max-width: 100%;
+  max-height: 100%;
+}
+.hero {
+  height: 589px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: flex-start;
+  padding: 20px;
+  box-sizing: border-box;
+  gap: 200px;
+  background-image: url(./public/hero@3x.png);
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: top;
+  text-align: right;
+  font-size: 21px;
+  color: #000;
+  font-family: "Helvetica Neue";
+}
+.hero-description,
+.main-content {
+  align-self: stretch;
+  position: relative;
+}
+.hero-description {
+  margin: 0;
+  font-size: inherit;
+  line-height: 50px;
+  font-weight: 100;
+  font-family: inherit;
+}
+.main-content {
+  height: 336px;
+  line-height: 40px;
+  display: inline-block;
+}
+.portfolio-peek-icon {
+  align-self: stretch;
+  border-radius: 209.5px;
+  max-width: 100%;
+  overflow: hidden;
+  max-height: 100%;
+}
+.content-body,
+.page-content {
+  align-self: stretch;
+  height: 758px;
+  overflow: hidden;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  font-size: 21px;
+}
+.page-content {
+  height: 1018px;
+  background-color: #fff;
+  padding: 45px 30px;
+  box-sizing: border-box;
+  gap: 25px;
+  text-align: left;
+  font-size: 45px;
+  color: #000;
+  font-family: "Helvetica Neue";
+}
+.lets-work-together1 {
+  margin: 0;
+}
+.foooter-headline {
+  margin: 0;
+  align-self: stretch;
+  position: relative;
+  font-size: inherit;
+  line-height: 70px;
+  font-weight: 100;
+  font-family: inherit;
+}
+.infomarksextoncom {
+  position: relative;
+  font-size: 21px;
+  line-height: 70px;
+  font-family: "Helvetica Neue";
+  color: #fff;
+  text-align: center;
+}
+.bttn-phone,
+.bttn-phone1 {
+  cursor: pointer;
+  border: 1px solid #fff;
+  padding: 0 20px;
+  background-color: #000;
+  border-radius: 65px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}
+.bttn-phone1:hover,
+.bttn-phone:hover {
+  background-color: #333;
+  border: 1px solid #e6e6e6;
+  box-sizing: border-box;
+}
+.bttn-phone1 {
+  padding: 0 31px;
+}
+.contact-me {
+  position: relative;
+  line-height: 70px;
+}
+.bttn-contact {
+  width: 182px;
+  height: 182px;
+  border-radius: 91px;
+  background-color: #a120f2;
+  overflow: hidden;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 57px 6px;
+  box-sizing: border-box;
+}
+.contact-info {
+  overflow: hidden;
+  align-items: flex-start;
+  padding: 30px 0;
+  gap: 45px;
+  text-align: center;
+  font-size: 21px;
+}
+.contact-info,
+.footer,
+.mobile-home {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+.footer {
+  align-self: stretch;
+  height: 808px;
+  background-color: #000;
+  overflow: hidden;
+  flex-shrink: 0;
+  align-items: flex-start;
+  padding: 50px;
+  box-sizing: border-box;
+  gap: 20px;
+  text-align: left;
+  font-size: 65px;
+  color: #fff;
+  font-family: "Helvetica Neue";
+}
+.mobile-home {
+  width: 100%;
+  position: relative;
+  align-items: flex-end;
+  line-height: normal;
+  letter-spacing: normal;
+}
+@media screen and (max-width: 438px) {
+  .footer {
+    padding-top: 21px;
+    padding-bottom: 21px;
+    box-sizing: border-box;
+  }
+}
+@media screen and (max-width: 251px) {
+  .contact-info {
+    gap: 22px;
+  }
+}
+
+}
