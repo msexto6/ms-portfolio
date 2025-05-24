@@ -102,33 +102,22 @@
   </main>
 
 
-
-
-
   <script>
     // SUBTLE PARALLAX SCROLL
     let ticking = false;
     let lastScrollY = 0;
     let scrollDirection = 1; // 1 for clockwise (down), -1 for counterclockwise (up)
-    let rotationSpeed = 0.2; // degrees per frame
+    let rotationSpeed = 0.1; // degrees per frame
     let currentRotation = 0;
-    let lastFrameTime = 0;
+    let scrollTimeout;
 
-    // Continuous rotation function with timing control
-    function animateRotation(timestamp) {
-      if (!lastFrameTime) lastFrameTime = timestamp;
-      const deltaTime = timestamp - lastFrameTime;
-
-      // Only update if enough time has passed (targeting ~60fps)
-      if (deltaTime >= 16) {
-        const circularText = document.querySelector('.portfolio-peek');
-        if (circularText) {
-          currentRotation += rotationSpeed * scrollDirection;
-          circularText.style.transform = `rotate(${currentRotation}deg)`;
-        }
-        lastFrameTime = timestamp;
+    // Continuous rotation function
+    function animateRotation() {
+      const circularText = document.querySelector('.portfolio-peek');
+      if (circularText) {
+        currentRotation += rotationSpeed * scrollDirection;
+        circularText.style.transform = `rotate(${currentRotation}deg)`;
       }
-
       requestAnimationFrame(animateRotation);
     }
 
@@ -136,13 +125,14 @@
       const scrollY = window.pageYOffset;
       const scrollDelta = scrollY - lastScrollY;
 
-      // Determine scroll direction and update rotation direction
-      if (Math.abs(scrollDelta) > 1) { // Only change direction on significant scroll
-        if (scrollDelta > 0) {
-          scrollDirection = 1; // scrolling down = clockwise
-        } else {
-          scrollDirection = -1; // scrolling up = counterclockwise
-        }
+      // Clear previous timeout
+      clearTimeout(scrollTimeout);
+
+      // Determine scroll direction - more aggressive detection for Chrome
+      if (scrollDelta > 0.5) {
+        scrollDirection = 1; // scrolling down = clockwise
+      } else if (scrollDelta < -0.5) {
+        scrollDirection = -1; // scrolling up = counterclockwise
       }
 
       // Hero section moves slowest
@@ -191,12 +181,20 @@
       }
     }
 
-    // Start continuous rotation after page loads
-    window.addEventListener('load', () => {
-      requestAnimationFrame(animateRotation);
-    });
+    // Start continuous rotation immediately
+    animateRotation();
 
+    // Chrome-specific scroll handling
     window.addEventListener('scroll', requestTick, { passive: true });
+
+    // Additional wheel event for better Chrome detection
+    window.addEventListener('wheel', function (e) {
+      if (e.deltaY > 0) {
+        scrollDirection = 1; // scrolling down = clockwise
+      } else if (e.deltaY < 0) {
+        scrollDirection = -1; // scrolling up = counterclockwise
+      }
+    }, { passive: true });
 
     // Mobile navigation toggle
     document.querySelector('.nav-toggle').onclick = () => {
