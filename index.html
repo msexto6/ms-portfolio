@@ -100,21 +100,35 @@
     </section>
 
   </main>
+
+
+
+
+
   <script>
     // SUBTLE PARALLAX SCROLL
     let ticking = false;
     let lastScrollY = 0;
     let scrollDirection = 1; // 1 for clockwise (down), -1 for counterclockwise (up)
-    let rotationSpeed = 0.1; // degrees per frame
+    let rotationSpeed = 0.2; // degrees per frame
     let currentRotation = 0;
+    let lastFrameTime = 0;
 
-    // Continuous rotation function
-    function animateRotation() {
-      const circularText = document.querySelector('.portfolio-peek');
-      if (circularText) {
-        currentRotation += rotationSpeed * scrollDirection;
-        circularText.style.transform = `rotate(${currentRotation}deg)`;
+    // Continuous rotation function with timing control
+    function animateRotation(timestamp) {
+      if (!lastFrameTime) lastFrameTime = timestamp;
+      const deltaTime = timestamp - lastFrameTime;
+
+      // Only update if enough time has passed (targeting ~60fps)
+      if (deltaTime >= 16) {
+        const circularText = document.querySelector('.portfolio-peek');
+        if (circularText) {
+          currentRotation += rotationSpeed * scrollDirection;
+          circularText.style.transform = `rotate(${currentRotation}deg)`;
+        }
+        lastFrameTime = timestamp;
       }
+
       requestAnimationFrame(animateRotation);
     }
 
@@ -123,12 +137,13 @@
       const scrollDelta = scrollY - lastScrollY;
 
       // Determine scroll direction and update rotation direction
-      if (scrollDelta > 0) {
-        scrollDirection = 1; // scrolling down = clockwise
-      } else if (scrollDelta < 0) {
-        scrollDirection = -1; // scrolling up = counterclockwise
+      if (Math.abs(scrollDelta) > 1) { // Only change direction on significant scroll
+        if (scrollDelta > 0) {
+          scrollDirection = 1; // scrolling down = clockwise
+        } else {
+          scrollDirection = -1; // scrolling up = counterclockwise
+        }
       }
-      // If scrollDelta is 0 (no scroll), keep previous direction
 
       // Hero section moves slowest
       const hero = document.querySelector('.hero');
@@ -148,7 +163,7 @@
 
       if (heroLogoDesktop) {
         if (window.innerWidth > 768) {
-          const horizontalOffset = scrollY * 0.4;
+          const horizontalOffset = scrollY * 0.3;
           heroLogoDesktop.style.transform = `translateY(${scrollY * -0.05}px) translateX(-${horizontalOffset}px)`;
         } else {
           heroLogoDesktop.style.transform = `translateY(${scrollY * -0.05}px)`;
@@ -176,8 +191,10 @@
       }
     }
 
-    // Start continuous rotation
-    animateRotation();
+    // Start continuous rotation after page loads
+    window.addEventListener('load', () => {
+      requestAnimationFrame(animateRotation);
+    });
 
     window.addEventListener('scroll', requestTick, { passive: true });
 
