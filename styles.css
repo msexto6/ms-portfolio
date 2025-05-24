@@ -177,7 +177,7 @@ p {
 .portfolio-peek {
   width: 100%;
   height: auto;
-  animation: spin 50s linear infinite;
+  /* Remove: animation: spin 50s linear infinite; */
   transform-origin: center center;
   position: relative;
   z-index: 2;
@@ -194,10 +194,9 @@ p {
 
 .purple-circle {
   position: absolute;
-  top: 50%;
+  top: 49%;
   left: 50%;
-  transform: translate(-50%, -50%) scale(1.1);
-  /* Add scale for fine adjustment */
+  transform: translate(-50%, -50%);
   width: 35%;
   height: 35%;
   background: var(--primary);

@@ -100,45 +100,72 @@
     </section>
 
   </main>
-
-
   <script>
     // SUBTLE PARALLAX SCROLL
     let ticking = false;
+    let lastScrollY = 0;
+    let scrollDirection = 1; // 1 for clockwise (down), -1 for counterclockwise (up)
+    let rotationSpeed = 0.1; // degrees per frame
+    let currentRotation = 0;
+
+    // Continuous rotation function
+    function animateRotation() {
+      const circularText = document.querySelector('.portfolio-peek');
+      if (circularText) {
+        currentRotation += rotationSpeed * scrollDirection;
+        circularText.style.transform = `rotate(${currentRotation}deg)`;
+      }
+      requestAnimationFrame(animateRotation);
+    }
 
     function updateParallax() {
       const scrollY = window.pageYOffset;
+      const scrollDelta = scrollY - lastScrollY;
+
+      // Determine scroll direction and update rotation direction
+      if (scrollDelta > 0) {
+        scrollDirection = 1; // scrolling down = clockwise
+      } else if (scrollDelta < 0) {
+        scrollDirection = -1; // scrolling up = counterclockwise
+      }
+      // If scrollDelta is 0 (no scroll), keep previous direction
 
       // Hero section moves slowest
       const hero = document.querySelector('.hero');
       if (hero) {
-        hero.style.transform = `translateY(${scrollY * 0.05}px)`;
+        hero.style.transform = `translateY(${scrollY * -0.1}px)`;
       }
 
       // Page content moves at medium speed
       const pageContent = document.querySelector('.page-content');
       if (pageContent) {
-        pageContent.style.transform = `translateY(${scrollY * -0.2}px)`;
+        pageContent.style.transform = `translateY(${scrollY * -0.15}px)`;
       }
 
-      // Logo needs to move relative to the hero section to match page content
+      // Logo with horizontal movement on desktop
       const heroLogoDesktop = document.querySelector('.hero-logo-desktop');
       const heroLogoMobile = document.querySelector('.hero-logo-mobile');
 
       if (heroLogoDesktop) {
-        heroLogoDesktop.style.transform = `translateY(${scrollY * -0.25}px)`; // -0.15 total (hero -0.1 + logo -0.05)
+        if (window.innerWidth > 768) {
+          const horizontalOffset = scrollY * 0.4;
+          heroLogoDesktop.style.transform = `translateY(${scrollY * -0.05}px) translateX(-${horizontalOffset}px)`;
+        } else {
+          heroLogoDesktop.style.transform = `translateY(${scrollY * -0.05}px)`;
+        }
       }
 
       if (heroLogoMobile) {
-        heroLogoMobile.style.transform = `translateY(${scrollY * -0.25}px)`; // -0.15 total (hero -0.1 + logo -0.05)
+        heroLogoMobile.style.transform = `translateY(${scrollY * -0.05}px)`;
       }
 
       // Footer moves fastest
       const footer = document.querySelector('.footer');
       if (footer) {
-        footer.style.transform = `translateY(${scrollY * -0.25}px)`;
+        footer.style.transform = `translateY(${scrollY * -0.2}px)`;
       }
 
+      lastScrollY = scrollY;
       ticking = false;
     }
 
@@ -149,6 +176,9 @@
       }
     }
 
+    // Start continuous rotation
+    animateRotation();
+
     window.addEventListener('scroll', requestTick, { passive: true });
 
     // Mobile navigation toggle
@@ -156,10 +186,6 @@
       document.querySelector('.nav-list').classList.toggle('open');
     };
   </script>
-
-
-
-
 
 </body>
 
