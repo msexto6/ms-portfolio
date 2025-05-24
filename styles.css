@@ -1,563 +1,388 @@
+:root {
+  --primary: #5000ff;
+  --bg: #000000;
+  --text: #000000;
+  --text-light: #ffffff;
 
-/* ===== Desktop Styles ===== */
-@media (min-width: 769px) {
-.menu2 {
-  width: 320px;
-  height: 27px;
-  position: relative;
-  white-space: pre-wrap;
-  display: inline-block;
+  --gutter: 1rem;
+  --pad: 4rem 8vw;
+  --pad-sm: 2rem 5vw;
+
+  --fs-base: 1.0rem;
+  --fs-lg: 2rem;
+  --fs-xl: 3.5rem;
+
+  --font-sans: "Helvetica Neue", Arial, sans-serif;
 }
-.purple-menu-dot {
-  height: 9px;
-  width: 9px;
-  position: relative;
-  border-radius: 50%;
-  background-color: #39009b;
-}
-.menu1,
-.purple-menu-dot-container {
-  display: flex;
-  flex-direction: row;
-  align-items: flex-start;
-  justify-content: flex-start;
-  padding: 0 49px;
-}
-.menu1 {
-  width: 364px;
-  height: 94px;
-  overflow: hidden;
-  flex-shrink: 0;
-  flex-direction: column;
-  padding: 23px 6px 28px 38px;
-  box-sizing: border-box;
-  gap: 7px;
-}
-.hero1,
-.marksexton-1-icon {
-  align-self: stretch;
-  overflow: hidden;
-}
-.marksexton-1-icon {
-  position: relative;
-  max-width: 100%;
-  max-height: 100%;
-}
-.hero1 {
-  height: 866px;
-  flex-shrink: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  justify-content: flex-start;
-  padding: 30px 45px;
-  box-sizing: border-box;
-  gap: 400px;
-  background-image: url(./public/hero1@3x.png);
-  background-size: cover;
-  background-repeat: no-repeat;
-  background-position: top;
-  text-align: right;
-  font-size: 21px;
-  color: #000;
-  font-family: "Helvetica Neue";
-}
-.hero-description1 {
+
+html,
+body {
   margin: 0;
-  align-self: stretch;
-  position: relative;
-  font-size: inherit;
-  line-height: 60px;
-  font-weight: 100;
-  font-family: inherit;
-}
-.with-years-of {
-  margin: 0;
-}
-.page-content-text-block {
-  height: 635px;
-  flex: 1;
-  position: relative;
-  line-height: 55px;
-  display: inline-block;
-  min-width: 482px;
-}
-.portfolio-peek-icon1 {
-  width: 424px;
-  border-radius: 209.5px;
-  max-height: 100%;
-  overflow: hidden;
-  flex-shrink: 0;
-  max-width: 100%;
-}
-.content,
-.page-content1 {
-  align-self: stretch;
-  overflow: hidden;
-  display: flex;
-  align-items: flex-start;
-  justify-content: flex-start;
-  max-width: 100%;
-}
-.content {
-  flex: 1;
-  flex-direction: row;
-  gap: 75px;
-  font-size: 21px;
-}
-.page-content1 {
-  height: 1042px;
-  background-color: #fff;
-  flex-shrink: 0;
-  flex-direction: column;
-  padding: 100px;
-  box-sizing: border-box;
-  gap: 50px;
-  text-align: left;
-  font-size: 55px;
-  color: #000;
-  font-family: "Helvetica Neue";
-}
-.foooter-headline1 {
-  margin: 0;
-  position: relative;
-  font-size: inherit;
-  line-height: 70px;
-  font-weight: 100;
-  font-family: inherit;
-}
-.horizontal-line-icon {
-  position: absolute;
-  top: 121.5px;
-  left: 0;
-  max-height: 100%;
-  width: 1193px;
-}
-.infomarksextoncom1 {
-  position: relative;
-  font-size: 21px;
-  line-height: 70px;
-  font-family: "Helvetica Neue";
-  color: #fff;
-  text-align: center;
-}
-.bttn-phone2 {
-  border-radius: 65px;
-  background-color: #000;
-  border: 1px solid #fff;
-  overflow: hidden;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-  padding: 0 20px;
-}
-.contact-details {
-  cursor: pointer;
-  border: 0;
   padding: 0;
-  background-color: transparent;
-  position: absolute;
-  top: 86px;
-  left: 0;
-  height: 126px;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: flex-start;
-}
-.bttn-phone3 {
-  border-radius: 65px;
-  background-color: #000;
-  border: 1px solid #fff;
-  overflow: hidden;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-  padding: 0 31px;
-}
-.contact-details1 {
-  cursor: pointer;
-  border: 0;
-  padding: 0 36px 0 0;
-  background-color: transparent;
-  position: absolute;
-  top: 86px;
-  left: 341px;
-  height: 126px;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: flex-start;
-  box-sizing: border-box;
-}
-.contact-me1 {
-  position: relative;
-  line-height: 70px;
-}
-.bttn-contact1 {
-  position: absolute;
-  top: 30px;
-  left: 660px;
-  border-radius: 91px;
-  background-color: #a120f2;
-  width: 182px;
-  height: 182px;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 57px 6px;
-  box-sizing: border-box;
-}
-.footer-contact {
-  width: 1067px;
-  height: 242px;
-  position: relative;
-  overflow: hidden;
-  flex-shrink: 0;
-  text-align: center;
-  font-size: 21px;
-}
-.desktop-home,
-.footer1 {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-}
-.footer1 {
-  align-self: stretch;
-  height: 662px;
-  background-color: #000;
-  overflow: hidden;
-  flex-shrink: 0;
-  align-items: flex-start;
-  padding: 126px 111px;
-  box-sizing: border-box;
-  gap: 10px;
-  text-align: left;
-  font-size: 65px;
-  color: #fff;
-  font-family: "Helvetica Neue";
-}
-.desktop-home {
-  width: 100%;
-  position: relative;
-  align-items: flex-end;
-  line-height: normal;
-  letter-spacing: normal;
-}
-@media screen and (max-width: 1200px) {
-  .portfolio-peek-icon1 {
-    flex: 1;
-  }
-  .content {
-    flex-wrap: wrap;
-  }
-  .footer1 {
-    padding-left: 55px;
-    padding-right: 55px;
-    box-sizing: border-box;
-  }
-}
-@media screen and (max-width: 1050px) {
-  .hero1 {
-    padding-top: 20px;
-    padding-bottom: 20px;
-    box-sizing: border-box;
-  }
-  .hero-description1 {
-    font-size: 44px;
-    line-height: 48px;
-  }
-  .page-content1 {
-    padding-top: 65px;
-    padding-bottom: 65px;
-    box-sizing: border-box;
-  }
-  .foooter-headline1 {
-    font-size: 52px;
-    line-height: 56px;
-  }
-}
-@media screen and (max-width: 750px) {
-  .hero1 {
-    gap: 200px;
-    padding-left: 22px;
-    padding-right: 22px;
-    box-sizing: border-box;
-  }
-  .page-content-text-block {
-    min-width: 100%;
-  }
-  .content {
-    gap: 37px;
-  }
-  .page-content1 {
-    gap: 25px;
-    padding: 42px 50px;
-    box-sizing: border-box;
-  }
-  .footer1 {
-    padding: 82px 27px;
-    box-sizing: border-box;
-  }
-}
-@media screen and (max-width: 450px) {
-  .menu2 {
-    font-size: 17px;
-  }
-  .hero1 {
-    gap: 100px;
-  }
-  .hero-description1 {
-    font-size: 33px;
-    line-height: 36px;
-  }
-  .page-content-text-block {
-    font-size: 17px;
-    line-height: 44px;
-  }
-  .content {
-    gap: 19px;
-  }
-  .page-content1 {
-    padding-left: 20px;
-    padding-right: 20px;
-    box-sizing: border-box;
-  }
-  .foooter-headline1 {
-    font-size: 39px;
-    line-height: 42px;
-  }
-  .contact-me1,
-  .infomarksextoncom1 {
-    font-size: 17px;
-    line-height: 56px;
-  }
+  overflow-x: hidden;
+
+  font-size: var(--fs-base);
+  font-family: var(--font-sans);
+  font-weight: 400;
+  color: var(--text);
+  line-height: 2.3;
 }
 
+/* Typography */
+h1,
+h2,
+h3,
+h4,
+p {
+  margin-bottom: var(--gutter);
 }
 
-/* ===== Mobile Styles ===== */
-@media (max-width: 768px) {
-.menu-text {
-  width: 320px;
-  height: 27px;
-  position: relative;
-  display: inline-block;
+h1 {
+  font-size: var(--fs-xl);
+  font-weight: 300;
+  line-height: 1.1;
 }
-.purple-menu-dot-icon {
-  height: 9px;
-  width: 9px;
-  position: relative;
-}
-.menu,
-.purple-menu-dot-wrapper {
-  display: flex;
-  flex-direction: row;
-  align-items: flex-start;
-  justify-content: flex-end;
-  padding: 0 22px;
-}
-.menu {
-  width: 364px;
-  height: 94px;
-  overflow: hidden;
-  flex-shrink: 0;
-  flex-direction: column;
-  align-items: flex-end;
-  justify-content: flex-start;
-  padding: 23px 6px 28px;
-  box-sizing: border-box;
-  gap: 7px;
-}
-.hero,
-.marksextonstacked-1-icon {
-  align-self: stretch;
-  overflow: hidden;
-}
-.marksextonstacked-1-icon {
-  position: relative;
+
+p {
+  font-size: var(--fs-base);
   max-width: 100%;
-  max-height: 100%;
 }
+
+/* ================= HERO SECTION ================= */
+
 .hero {
-  height: 589px;
-  flex-shrink: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  justify-content: flex-start;
-  padding: 20px;
-  box-sizing: border-box;
-  gap: 200px;
-  background-image: url(./public/hero@3x.png);
-  background-size: cover;
-  background-repeat: no-repeat;
-  background-position: top;
-  text-align: right;
-  font-size: 21px;
-  color: #000;
-  font-family: "Helvetica Neue";
-}
-.hero-description,
-.main-content {
-  align-self: stretch;
   position: relative;
-}
-.hero-description {
+  width: 100vw;
+  min-height: 100vh;
   margin: 0;
-  font-size: inherit;
-  line-height: 50px;
-  font-weight: 100;
-  font-family: inherit;
-}
-.main-content {
-  height: 336px;
-  line-height: 40px;
-  display: inline-block;
-}
-.portfolio-peek-icon {
-  align-self: stretch;
-  border-radius: 209.5px;
-  max-width: 100%;
+  padding: 0;
   overflow: hidden;
-  max-height: 100%;
+  will-change: transform;
+  /* Add this line */
 }
-.content-body,
-.page-content {
-  align-self: stretch;
-  height: 758px;
-  overflow: hidden;
-  flex-shrink: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: flex-start;
-  font-size: 21px;
-}
-.page-content {
-  height: 1018px;
-  background-color: #fff;
-  padding: 45px 30px;
-  box-sizing: border-box;
-  gap: 25px;
-  text-align: left;
-  font-size: 45px;
-  color: #000;
-  font-family: "Helvetica Neue";
-}
-.lets-work-together1 {
-  margin: 0;
-}
-.foooter-headline {
-  margin: 0;
-  align-self: stretch;
-  position: relative;
-  font-size: inherit;
-  line-height: 70px;
-  font-weight: 100;
-  font-family: inherit;
-}
-.infomarksextoncom {
-  position: relative;
-  font-size: 21px;
-  line-height: 70px;
-  font-family: "Helvetica Neue";
-  color: #fff;
-  text-align: center;
-}
-.bttn-phone,
-.bttn-phone1 {
-  cursor: pointer;
-  border: 1px solid #fff;
-  padding: 0 20px;
+
+.background-video {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  object-fit: cover;
   background-color: #000;
-  border-radius: 65px;
-  overflow: hidden;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
+  z-index: -1;
 }
-.bttn-phone1:hover,
-.bttn-phone:hover {
-  background-color: #333;
-  border: 1px solid #e6e6e6;
-  box-sizing: border-box;
+
+.corner-fade {
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: auto;
+  width: 100vw;
+  max-height: 30vh;
+  object-fit: none;
+  object-position: top right;
+  z-index: 2;
+  pointer-events: none;
 }
-.bttn-phone1 {
-  padding: 0 31px;
+
+.hero-logo {
+  position: absolute;
+  bottom: 2rem;
+  left: 5vw;
+  width: 90vw;
+  max-width: 90vw;
+  height: auto;
+  z-index: 1;
+  pointer-events: none;
+  will-change: transform;
+  /* Add this line */
 }
-.contact-me {
-  position: relative;
-  line-height: 70px;
+
+.hero-logo-desktop {
+  display: block;
 }
-.bttn-contact {
-  width: 182px;
-  height: 182px;
-  border-radius: 91px;
-  background-color: #a120f2;
-  overflow: hidden;
-  flex-shrink: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 57px 6px;
-  box-sizing: border-box;
+
+.hero-logo-mobile {
+  display: none;
 }
-.contact-info {
-  overflow: hidden;
-  align-items: flex-start;
-  padding: 30px 0;
-  gap: 45px;
-  text-align: center;
-  font-size: 21px;
-}
-.contact-info,
-.footer,
-.mobile-home {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-}
-.footer {
-  align-self: stretch;
-  height: 808px;
-  background-color: #000;
-  overflow: hidden;
-  flex-shrink: 0;
-  align-items: flex-start;
-  padding: 50px;
-  box-sizing: border-box;
-  gap: 20px;
-  text-align: left;
-  font-size: 65px;
-  color: #fff;
-  font-family: "Helvetica Neue";
-}
-.mobile-home {
+
+/* ================= NAVIGATION ================= */
+
+.site-header {
+  position: absolute;
+  top: 0;
+  right: 0;
   width: 100%;
+  padding: 0.8rem 6vw;
+  display: flex;
+  justify-content: flex-end;
+  z-index: 2;
+}
+
+.nav-list {
+  list-style: none;
+  display: flex;
+  gap: 2rem;
+}
+
+.nav-list a {
+  color: var(--text);
+  text-decoration: none;
+}
+
+.nav-item {
   position: relative;
-  align-items: flex-end;
-  line-height: normal;
-  letter-spacing: normal;
+  padding-bottom: 0.8rem;
 }
-@media screen and (max-width: 438px) {
+
+.nav-item.active::after {
+  content: "";
+  position: absolute;
+  bottom: 0.1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 10px;
+  height: 10px;
+  background: url('./public/purple-menu-dot.svg') no-repeat center;
+  background-size: contain;
+  pointer-events: none;
+}
+
+.nav-toggle {
+  display: none;
+  background: none;
+  border: none;
+  color: var(--text);
+  font-size: 1.5rem;
+}
+
+/* ================= PAGE CONTENT ================= */
+
+.page-content {
+  background-color: #ffffff;
+  padding: var(--pad);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  will-change: transform;
+  /* Add this line */
+}
+
+.page-text {
+  width: 40vw;
+  max-width: 40vw;
+  padding-left: 0;
+}
+
+.portfolio-peek {
+  width: 100%;
+  height: auto;
+  animation: spin 50s linear infinite;
+  transform-origin: center center;
+  position: relative;
+  z-index: 2;
+}
+
+.portfolio-peek-wrapper {
+  position: relative;
+  width: 40vw;
+  max-width: 40vw;
+  height: auto;
+  align-self: flex-start;
+}
+
+
+.purple-circle {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(1.1);
+  /* Add scale for fine adjustment */
+  width: 35%;
+  height: 35%;
+  background: var(--primary);
+  border-radius: 50%;
+  z-index: 1;
+}
+
+/* ================= FOOTER ================= */
+
+.footer {
+  background: var(--bg);
+  color: var(--text-light);
+  padding: var(--pad);
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2rem;
+  height: 50vh;
+  will-change: transform;
+  /* Add this line */
+}
+
+.footer-title {
+  font-size: var(--fs-xl);
+  font-weight: 300;
+  max-width: 50vw;
+  line-height: 1.1;
+}
+
+.footer-contact {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--gutter);
+}
+
+.btn {
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  text-align: center;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  display: inline-block;
+  line-height: 1.2;
+}
+
+.btn-outline {
+  padding: 0.7rem 2.2rem;
+  border: 1px solid var(--text-light);
+  color: var(--text-light);
+  background: transparent;
+  border-radius: 50px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  height: 50px;
+}
+
+.btn-outline:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.btn-primary {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  padding: 0;
+  font-size: 0.75rem;
+  background: var(--primary);
+  color: var(--text-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  white-space: nowrap;
+  border: none;
+}
+
+.btn-primary:hover {
+  opacity: 0.9;
+}
+
+/* ================= ROTATION ANIMATION ================= */
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ================= RESPONSIVE (Mobile) ================= */
+
+@media (max-width: 768px) {
+  .nav-list {
+    display: none;
+  }
+
+  .nav-toggle {
+    display: block;
+  }
+
+  .nav-item.active::after {
+    display: none;
+  }
+
+  .hero-logo-desktop {
+    display: none;
+  }
+
+  .hero-logo-mobile {
+    display: block;
+  }
+
+  .page-content {
+    flex-direction: column;
+    padding: var(--pad-sm);
+  }
+
+  .page-text,
+  .portfolio-peek {
+    width: 100%;
+    max-width: 100%;
+  }
+
+
+  .portfolio-peek-wrapper {
+    width: 100%;
+    max-width: 100%;
+  }
+
   .footer {
-    padding-top: 21px;
-    padding-bottom: 21px;
-    box-sizing: border-box;
+    height: 80vh;
   }
-}
-@media screen and (max-width: 251px) {
-  .contact-info {
-    gap: 22px;
+
+
+
+  .footer-contact {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2rem;
+    /* Reduced from 4rem */
   }
+
+  .footer-title {
+    max-width: 100%;
+  }
+
+  .corner-fade {
+    display: none;
+  }
+
+
 }
+
+
+
+
+/* ================= RESPONSIVE (Desktop) ================= */
+
+@media (min-width: 769px) {
+  .page-content {
+    display: flex;
+    flex-wrap: nowrap;
+    padding: var(--pad);
+    gap: 2rem;
+  }
+
+  .page-text,
+  .portfolio-peek {
+    flex: 1 1 0;
+    max-width: 48vw;
+  }
+
+  .footer-contact {
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: 4vw;
+    /* Viewport-based spacing */
+  }
+
 
 }
