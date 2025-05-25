@@ -1,9 +1,31 @@
+/* Font Face Declarations */
+@font-face {
+  font-family: 'Helvetica Neue';
+  font-weight: 200;
+  font-style: normal;
+  src: url('./public/helveticaneuethin-webfont.woff2') format('woff2'),
+    url('./public/helveticaneuethin-webfont.woff') format('woff'),
+    url('./public/HelveticaNeueThin.ttf') format('truetype'),
+    url('./public/HelveticaNeueThin.otf') format('opentype');
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Helvetica Neue';
+  font-weight: 300;
+  font-style: normal;
+  src: url('./public/helveticaneuelight-webfont.woff2') format('woff2'),
+    url('./public/helveticaneuelight-webfont.woff') format('woff'),
+    url('./public/HelveticaNeueLight.ttf') format('truetype'),
+    url('./public/HelveticaNeueLight.otf') format('opentype');
+  font-display: swap;
+}
+
 :root {
   --primary: #5000ff;
   --bg: #000000;
   --text: #000000;
   --text-light: #ffffff;
-
   --gutter: 1rem;
   --pad: 4rem 8vw;
   --pad-sm: 2rem 5vw;
@@ -12,7 +34,7 @@
   --fs-lg: 2rem;
   --fs-xl: 3.5rem;
 
-  --font-sans: "Helvetica Neue", Arial, sans-serif;
+  --font-sans: 'Helvetica Neue', Arial, sans-serif;
 }
 
 html,
@@ -20,10 +42,11 @@ body {
   margin: 0;
   padding: 0;
   overflow-x: hidden;
-
+  height: 100%;
   font-size: var(--fs-base);
   font-family: var(--font-sans);
-  font-weight: 400;
+  font-weight: 300;
+  /* Light weight for body */
   color: var(--text);
   line-height: 2.3;
 }
@@ -37,10 +60,52 @@ p {
   margin-bottom: var(--gutter);
 }
 
+
+
+
+
+.fade-in {
+  opacity: 0;
+  transform: translateY(20%);
+  transition: transform 0.8s ease-out, opacity 0.8s ease-out;
+}
+
+.animated {
+  opacity: 1;
+  transform: translateY(0);
+}
+
 h1 {
   font-size: var(--fs-xl);
-  font-weight: 300;
+  font-weight: 200;
+  /* Thin weight for headlines */
+  letter-spacing: -0.02rem;
   line-height: 1.1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Headline Animation Styles */
+h1 .line-wrapper,
+.footer-title .line-wrapper {
+  display: block;
+  overflow: visible;
+  vertical-align: top;
+  line-height: 1.1;
+}
+
+h1 .line,
+.footer-title .line {
+  display: inline-block;
+  transform: translateY(120%);
+  opacity: 0;
+  transition: transform 1.5s cubic-bezier(0.19, 1, 0.22, 1), opacity 1.5s ease-out;
+}
+
+h1.animate-in .line,
+.footer-title.animate-in .line {
+  transform: translateY(0);
+  opacity: 1;
 }
 
 p {
@@ -87,10 +152,10 @@ p {
 
 .hero-logo {
   position: absolute;
-  bottom: 2rem;
-  left: 5vw;
-  width: 90vw;
-  max-width: 90vw;
+  bottom: 6rem;
+  left: 0vw;
+  width: 98vw;
+  max-width: 98vw;
   height: auto;
   z-index: 1;
   pointer-events: none;
@@ -216,15 +281,20 @@ p {
   align-items: flex-start;
   gap: 2rem;
   height: 50vh;
+  margin-bottom: 0;
   will-change: transform;
   /* Add this line */
 }
 
 .footer-title {
   font-size: var(--fs-xl);
-  font-weight: 300;
+  font-weight: 200;
+  /* Thin weight for headlines */
+  letter-spacing: -0.02rem;
   max-width: 50vw;
   line-height: 1.1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 .footer-contact {
@@ -298,6 +368,13 @@ p {
 @media (max-width: 768px) {
   .nav-list {
     display: none;
+  }
+
+
+  .hero-logo-mobile {
+    width: 90vw;
+    left: 4vw;
+    /* or 2vw or whatever spacing you want */
   }
 
   .nav-toggle {

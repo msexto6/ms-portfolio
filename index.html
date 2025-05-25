@@ -5,52 +5,31 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Mark Sexton Portfolio</title>
-  <meta name="description" content="Creative Director, designer and technologist — Mark Sexton" />
+  <meta name="description" content="Creative Director, designer and technologist – Mark Sexton" />
   <link rel="stylesheet" href="./styles.css" />
 
-
-  <!-- Favicon basics -->
+  <!-- Favicon -->
   <link rel="icon" type="image/png" sizes="32x32" href="/public/favicon_io/favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/public/favicon_io/favicon-16x16.png">
   <link rel="shortcut icon" href="/public/favicon_io/favicon.ico">
-
-  <!-- Apple Touch Icon -->
   <link rel="apple-touch-icon" href="/favicon_io/apple-touch-icon.png">
-
-  <!-- Android + PWA Support -->
   <link rel="manifest" href="/public/favicon_io/site.webmanifest">
   <link rel="icon" type="image/png" sizes="192x192" href="/public/favicon_io/android-chrome-192x192.png">
   <link rel="icon" type="image/png" sizes="512x512" href="/public/favicon_io/android-chrome-512x512.png">
-
-
-
-
-
 </head>
 
 <body>
   <main>
-
-    <!-- HERO SECTION -->
     <section class="hero">
-      <!-- Video Background -->
       <video class="background-video" autoplay muted loop playsinline>
         <source src="./public/wave-loop-1920x.webm" type="video/webm" />
         Your browser doesn’t support HTML5 video.
       </video>
-
       <img src="./public/corner-fade.png" alt="" class="corner-fade" />
-
-      <!-- Desktop SVG -->
       <img src="./public/marksexton-1.svg" alt="Mark Sexton" class="hero-logo hero-logo-desktop" />
-
-      <!-- Mobile SVG -->
       <img src="./public/marksextonstacked-1.svg" alt="Mark Sexton" class="hero-logo hero-logo-mobile" />
 
-      <!-- Navigation -->
       <header class="site-header">
-        <!-- Corner Fade -->
-
         <nav class="nav">
           <ul class="nav-list">
             <li class="nav-item active"><a href="#">Home</a></li>
@@ -60,58 +39,62 @@
           </ul>
           <button class="nav-toggle" aria-label="Toggle menu">☰</button>
         </nav>
-
       </header>
     </section>
 
-    <!-- MAIN CONTENT -->
     <section class="page-content">
       <div class="page-text">
-        <h1>Creative Director, designer and technologist</h1>
-        <p>
-          With years of experience leading groundbreaking design initiatives across interactive media, augmented
-          reality, video animation, experiential displays, print, and packaging, I specialize in pushing creative
-          boundaries and leveraging emerging technologies to achieve measurable results.
-        </p>
-        <p>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et
-          dolore magna aliqua…
-        </p>
+        <h1 class="fade-in">Creative Director, designer and technologist</h1>
+        <p class="fade-in">With years of experience leading groundbreaking design initiatives across interactive media,
+          augmented reality, video animation, experiential displays, print, and packaging, I specialize in pushing
+          creative boundaries and leveraging emerging technologies to achieve measurable results.</p>
+        <p class="fade-in">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut
+          labore et dolore magna aliqua…</p>
       </div>
 
       <div class="portfolio-peek-wrapper">
         <div class="purple-circle"></div>
         <img class="portfolio-peek" src="./public/circular-type.svg" alt="Portfolio preview" />
       </div>
-
-
     </section>
 
-    <!-- FOOTER -->
     <section class="footer" id="contact">
-
-      <h2 class="footer-title">Let's work together on your next project</h2>
-
-      <div class="footer-contact">
+      <h2 class="footer-title fade-in">Let's work together on your next project</h2>
+      <div class="footer-contact fade-in">
         <a href="mailto:info@marksexton.com" class="btn btn-outline">info@marksexton.com</a>
         <a href="tel:+17632349542" class="btn btn-outline">763.234.9542</a>
         <a href="#contact" class="btn btn-primary">Contact me</a>
       </div>
     </section>
-
   </main>
 
-
   <script>
-    // SUBTLE PARALLAX SCROLL
+    let lastScrollY = window.scrollY;
+    let scrollDirection = 1;
     let ticking = false;
-    let lastScrollY = 0;
-    let scrollDirection = 1; // 1 for clockwise (down), -1 for counterclockwise (up)
-    let rotationSpeed = 0.1; // degrees per frame
     let currentRotation = 0;
-    let scrollTimeout;
+    let rotationSpeed = 0.1;
 
-    // Continuous rotation function
+    window.addEventListener("scroll", () => {
+      const currentY = window.scrollY;
+      scrollDirection = currentY > lastScrollY ? 1 : -1;
+      lastScrollY = currentY;
+    });
+
+    function animateOnScroll() {
+      const fadeElements = document.querySelectorAll('h1.fade-in, p.fade-in, .footer-title.fade-in, .footer-contact.fade-in');
+
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting && scrollDirection === 1) {
+            entry.target.classList.add('animated');
+          }
+        });
+      }, { threshold: 0.2 });
+
+      fadeElements.forEach(el => observer.observe(el));
+    }
+
     function animateRotation() {
       const circularText = document.querySelector('.portfolio-peek');
       if (circularText) {
@@ -123,31 +106,13 @@
 
     function updateParallax() {
       const scrollY = window.pageYOffset;
-      const scrollDelta = scrollY - lastScrollY;
 
-      // Clear previous timeout
-      clearTimeout(scrollTimeout);
-
-      // Determine scroll direction - more aggressive detection for Chrome
-      if (scrollDelta > 0.5) {
-        scrollDirection = 1; // scrolling down = clockwise
-      } else if (scrollDelta < -0.5) {
-        scrollDirection = -1; // scrolling up = counterclockwise
-      }
-
-      // Hero section moves slowest
       const hero = document.querySelector('.hero');
-      if (hero) {
-        hero.style.transform = `translateY(${scrollY * -0.1}px)`;
-      }
+      if (hero) hero.style.transform = `translateY(${scrollY * -0.1}px)`;
 
-      // Page content moves at medium speed
       const pageContent = document.querySelector('.page-content');
-      if (pageContent) {
-        pageContent.style.transform = `translateY(${scrollY * -0.15}px)`;
-      }
+      if (pageContent) pageContent.style.transform = `translateY(${scrollY * -0.15}px)`;
 
-      // Logo with horizontal movement on desktop
       const heroLogoDesktop = document.querySelector('.hero-logo-desktop');
       const heroLogoMobile = document.querySelector('.hero-logo-mobile');
 
@@ -164,11 +129,8 @@
         heroLogoMobile.style.transform = `translateY(${scrollY * -0.05}px)`;
       }
 
-      // Footer moves fastest
       const footer = document.querySelector('.footer');
-      if (footer) {
-        footer.style.transform = `translateY(${scrollY * -0.15}px)`;
-      }
+      if (footer) footer.style.transform = `translateY(${scrollY * -0.15}px)`;
 
       lastScrollY = scrollY;
       ticking = false;
@@ -181,27 +143,21 @@
       }
     }
 
-    // Start continuous rotation immediately
-    animateRotation();
+    document.addEventListener('DOMContentLoaded', () => {
+      animateOnScroll();
+      animateRotation();
+    });
 
-    // Chrome-specific scroll handling
     window.addEventListener('scroll', requestTick, { passive: true });
 
-    // Additional wheel event for better Chrome detection
     window.addEventListener('wheel', function (e) {
-      if (e.deltaY > 0) {
-        scrollDirection = 1; // scrolling down = clockwise
-      } else if (e.deltaY < 0) {
-        scrollDirection = -1; // scrolling up = counterclockwise
-      }
+      scrollDirection = e.deltaY > 0 ? 1 : -1;
     }, { passive: true });
 
-    // Mobile navigation toggle
     document.querySelector('.nav-toggle').onclick = () => {
       document.querySelector('.nav-list').classList.toggle('open');
     };
   </script>
-
 </body>
 
 </html>
