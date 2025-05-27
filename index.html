@@ -26,13 +26,18 @@
                user-scalable=no" />
 
 
+  <link rel="preload" as="video" href="public/wave-loop.webm" type="video/webm" media="(min-width: 769px)">
+
+
+
 </head>
 
 <body>
   <main>
     <section class="hero">
-      <video class="background-video" autoplay muted loop playsinline>
-        <source src="./public/wave-loop-1920x.webm" type="video/webm" />
+      <video class="background-video" autoplay muted loop playsinline poster="public/wave-loop.jpg" preload="auto">
+        <source src="./public/wave-loop.webm" type="video/webm" />
+        <source src="public/wave-loop.mp4" type="video/mp4">
         Your browser doesn’t support HTML5 video.
       </video>
       <img src="./public/corner-fade.png" alt="" class="corner-fade" />
