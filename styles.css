@@ -193,7 +193,10 @@ p {
 .nav-list a {
   color: var(--text);
   text-decoration: none;
+  font-weight: 400;
 }
+
+
 
 .nav-item {
   position: relative;
@@ -637,7 +640,7 @@ p {
 .nav-list a,
 .slide-nav-item a {
   font-family: 'Helvetica Neue', Arial, sans-serif;
-  font-weight: 100;
+  font-weight: 200;
 }
 
 /* 2. Thin lines for open (“=”) and close (“×”) buttons */
