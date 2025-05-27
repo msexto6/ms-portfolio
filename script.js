@@ -1,3 +1,31 @@
+
+
+
+
+// ────────────────────────────────────────────────
+// PERMANENTLY DISABLE PINCH & GESTURE ZOOM
+// ────────────────────────────────────────────────
+; (function () {
+  // Prevent 2-finger pinch on touchmove
+  document.addEventListener('touchmove', function (e) {
+    if (e.touches && e.touches.length > 1) {
+      e.preventDefault();
+    }
+  }, { passive: false });
+
+  // Prevent the old iOS "gesturestart" (pinch/spread)
+  document.addEventListener('gesturestart', function (e) {
+    e.preventDefault();
+  });
+})();
+
+
+
+
+
+
+
+
 // ================= GLOBAL VARIABLES =================
 let lastScrollY = window.scrollY;
 let scrollDirection = 1;
