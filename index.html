@@ -68,96 +68,33 @@
     </section>
   </main>
 
-  <script>
-    let lastScrollY = window.scrollY;
-    let scrollDirection = 1;
-    let ticking = false;
-    let currentRotation = 0;
-    let rotationSpeed = 0.1;
+  <!-- Floating Menu Button (Desktop) -->
+  <button class="floating-menu-btn" aria-label="Open menu">
+    <span class="hamburger-line"></span>
+    <span class="hamburger-line"></span>
+    <span class="hamburger-line"></span>
+  </button>
 
-    window.addEventListener("scroll", () => {
-      const currentY = window.scrollY;
-      scrollDirection = currentY > lastScrollY ? 1 : -1;
-      lastScrollY = currentY;
-    });
+  <!-- Slide-in Menu -->
+  <div class="slide-menu" id="slideMenu">
+    <button class="close-btn" aria-label="Close menu">
+      <span class="close-x">×</span>
+    </button>
 
-    function animateOnScroll() {
-      const fadeElements = document.querySelectorAll('h1.fade-in, p.fade-in, .footer-title.fade-in, .footer-contact.fade-in');
+    <div class="menu-content">
+      <div class="menu-separator"></div>
+      <nav class="slide-nav">
+        <ul class="slide-nav-list">
+          <li class="slide-nav-item"><a href="#">Home</a></li>
+          <li class="slide-nav-item"><a href="#">Work</a></li>
+          <li class="slide-nav-item"><a href="#">About</a></li>
+          <li class="slide-nav-item"><a href="#">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </div>
 
-      const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting && scrollDirection === 1) {
-            entry.target.classList.add('animated');
-          }
-        });
-      }, { threshold: 0.2 });
-
-      fadeElements.forEach(el => observer.observe(el));
-    }
-
-    function animateRotation() {
-      const circularText = document.querySelector('.portfolio-peek');
-      if (circularText) {
-        currentRotation += rotationSpeed * scrollDirection;
-        circularText.style.transform = `rotate(${currentRotation}deg)`;
-      }
-      requestAnimationFrame(animateRotation);
-    }
-
-    function updateParallax() {
-      const scrollY = window.pageYOffset;
-
-      const hero = document.querySelector('.hero');
-      if (hero) hero.style.transform = `translateY(${scrollY * -0.1}px)`;
-
-      const pageContent = document.querySelector('.page-content');
-      if (pageContent) pageContent.style.transform = `translateY(${scrollY * -0.15}px)`;
-
-      const heroLogoDesktop = document.querySelector('.hero-logo-desktop');
-      const heroLogoMobile = document.querySelector('.hero-logo-mobile');
-
-      if (heroLogoDesktop) {
-        if (window.innerWidth > 768) {
-          const horizontalOffset = scrollY * 0.3;
-          heroLogoDesktop.style.transform = `translateY(${scrollY * -0.05}px) translateX(-${horizontalOffset}px)`;
-        } else {
-          heroLogoDesktop.style.transform = `translateY(${scrollY * -0.05}px)`;
-        }
-      }
-
-      if (heroLogoMobile) {
-        heroLogoMobile.style.transform = `translateY(${scrollY * -0.05}px)`;
-      }
-
-      const footer = document.querySelector('.footer');
-      if (footer) footer.style.transform = `translateY(${scrollY * -0.15}px)`;
-
-      lastScrollY = scrollY;
-      ticking = false;
-    }
-
-    function requestTick() {
-      if (!ticking) {
-        requestAnimationFrame(updateParallax);
-        ticking = true;
-      }
-    }
-
-    document.addEventListener('DOMContentLoaded', () => {
-      animateOnScroll();
-      animateRotation();
-    });
-
-    window.addEventListener('scroll', requestTick, { passive: true });
-
-    window.addEventListener('wheel', function (e) {
-      scrollDirection = e.deltaY > 0 ? 1 : -1;
-    }, { passive: true });
-
-    document.querySelector('.nav-toggle').onclick = () => {
-      document.querySelector('.nav-list').classList.toggle('open');
-    };
-  </script>
+  <script src="./script.js"></script>
 </body>
 
 </html>
