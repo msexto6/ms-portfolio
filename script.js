@@ -85,26 +85,34 @@ function updateParallax() {
   
   console.log('Parallax update called, scrollY:', scrollY);
   
-  // Simple parallax test - background video should move slower
+  // Background video moves slower (parallax effect)
   const backgroundVideo = document.querySelector('.background-video');
   if (backgroundVideo) {
-    const videoOffset = scrollY * 0.5;
+    const videoOffset = scrollY * -0.5; // Negative to move up as we scroll down
     backgroundVideo.style.transform = `translateY(${videoOffset}px)`;
     console.log('Video parallax applied:', videoOffset);
   }
   
-  // Hero logo parallax
+  // Hero section parallax
+  const hero = document.querySelector('.hero');
+  if (hero) {
+    const heroOffset = scrollY * -0.3; // Slower movement
+    hero.style.transform = `translateY(${heroOffset}px)`;
+    console.log('Hero parallax applied:', heroOffset);
+  }
+  
+  // Hero logo parallax - even slower
   const heroLogoDesktop = document.querySelector('.hero-logo-desktop');
   const heroLogoMobile = document.querySelector('.hero-logo-mobile');
   
   if (heroLogoDesktop && window.innerWidth > 768) {
-    const logoOffset = scrollY * 0.3;
+    const logoOffset = scrollY * -0.2;
     heroLogoDesktop.style.transform = `translateY(${logoOffset}px)`;
     console.log('Desktop logo parallax applied:', logoOffset);
   }
   
   if (heroLogoMobile && window.innerWidth <= 768) {
-    const logoOffset = scrollY * 0.3;
+    const logoOffset = scrollY * -0.2;
     heroLogoMobile.style.transform = `translateY(${logoOffset}px)`;
     console.log('Mobile logo parallax applied:', logoOffset);
   }

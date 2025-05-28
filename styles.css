@@ -54,7 +54,7 @@ body {
   margin: 0;
   padding: 0;
   overflow-x: hidden;
-  height: 100%;
+  min-height: 100%;
   font-size: var(--fs-base);
   font-family: var(--font-sans);
   font-weight: 300;
@@ -249,6 +249,7 @@ p {
   display: flex;
   flex-wrap: wrap;
   gap: 2rem;
+  min-height: 100vh; /* Ensure content is tall enough */
 }
 
 .page-text {
@@ -298,7 +299,7 @@ p {
   flex-direction: column;
   align-items: flex-start;
   gap: 2rem;
-  height: 50vh;
+  min-height: 100vh; /* Changed from 50vh to ensure scrolling */
   margin-bottom: 0;
 }
 
