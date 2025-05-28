@@ -32,6 +32,7 @@ let scrollDirection = 1;
 let ticking = false;
 let currentRotation = 0;
 let rotationSpeed = 0.1;
+let scrollRAF = null;
 
 // Store observers for cleanup
 let intersectionObserver = null;
@@ -79,42 +80,43 @@ function animateRotation() {
 
 // ================= PARALLAX FUNCTIONS =================
 function updateParallax() {
-  const scrollY = window.pageYOffset;
-
-  const hero = document.querySelector('.hero');
-  if (hero) hero.style.transform = `translate3d(0, ${scrollY * -0.1}px, 0)`;
-
-  const pageContent = document.querySelector('.page-content');
-  if (pageContent) pageContent.style.transform = `translate3d(0, ${scrollY * -0.15}px, 0)`;
-
+  // Get scroll position
+  const scrollY = window.scrollY || window.pageYOffset || 0;
+  
+  console.log('Parallax update called, scrollY:', scrollY);
+  
+  // Simple parallax test - background video should move slower
+  const backgroundVideo = document.querySelector('.background-video');
+  if (backgroundVideo) {
+    const videoOffset = scrollY * 0.5;
+    backgroundVideo.style.transform = `translateY(${videoOffset}px)`;
+    console.log('Video parallax applied:', videoOffset);
+  }
+  
+  // Hero logo parallax
   const heroLogoDesktop = document.querySelector('.hero-logo-desktop');
   const heroLogoMobile = document.querySelector('.hero-logo-mobile');
-
-  if (heroLogoDesktop) {
-    if (window.innerWidth > 768) {
-      const horizontalOffset = scrollY * 0.3;
-      heroLogoDesktop.style.transform = `translate3d(-${horizontalOffset}px, ${scrollY * -0.05}px, 0)`;
-    } else {
-      heroLogoDesktop.style.transform = `translate3d(0, ${scrollY * -0.05}px, 0)`;
-    }
+  
+  if (heroLogoDesktop && window.innerWidth > 768) {
+    const logoOffset = scrollY * 0.3;
+    heroLogoDesktop.style.transform = `translateY(${logoOffset}px)`;
+    console.log('Desktop logo parallax applied:', logoOffset);
   }
-
-  if (heroLogoMobile) {
-    heroLogoMobile.style.transform = `translate3d(0, ${scrollY * -0.05}px, 0)`;
+  
+  if (heroLogoMobile && window.innerWidth <= 768) {
+    const logoOffset = scrollY * 0.3;
+    heroLogoMobile.style.transform = `translateY(${logoOffset}px)`;
+    console.log('Mobile logo parallax applied:', logoOffset);
   }
-
-  const footer = document.querySelector('.footer');
-  if (footer) footer.style.transform = `translate3d(0, ${scrollY * -0.15}px, 0)`;
-
-  lastScrollY = scrollY;
-  ticking = false;
+  
+  scrollRAF = null;
 }
 
 function requestTick() {
-  if (!ticking) {
-    requestAnimationFrame(updateParallax);
-    ticking = true;
+  if (scrollRAF) {
+    cancelAnimationFrame(scrollRAF);
   }
+  scrollRAF = requestAnimationFrame(updateParallax);
 }
 
 // ================= MENU FUNCTIONS =================
@@ -301,6 +303,12 @@ function init() {
 
   // Set up the intersection observer for floating button
   floatingButtonObserver = setupFloatingButtonObserver();
+  
+  // Test if parallax is working at all
+  console.log('Parallax initialized');
+  
+  // Force initial parallax update
+  updateParallax();
 }
 
 // ================= PAGE LIFECYCLE =================

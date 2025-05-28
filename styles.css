@@ -21,6 +21,18 @@
   font-display: swap;
 }
 
+
+@font-face {
+  font-family: 'Helvetica Neue';
+  font-weight: 400;
+  font-style: normal;
+  src: url('./public/helveticaneueroman-webfont.woff2') format('woff2'),
+    url('./public/helveticaneueroman-webfont.woff') format('woff'),
+    url('./public/HelveticaNeueRoman.ttf') format('truetype'),
+    url('./public/HelveticaNeueRoman.otf') format('opentype');
+  font-display: swap;
+}
+
 :root {
   --primary: #5000ff;
   --bg: #000000;
@@ -123,7 +135,10 @@ p {
   padding: 0;
   overflow: hidden;
   will-change: transform;
-  /* Add this line */
+  transform: translateZ(0); /* Force GPU acceleration */
+  -webkit-transform: translateZ(0);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
 }
 
 .background-video {
@@ -160,15 +175,16 @@ p {
   z-index: 1;
   pointer-events: none;
   will-change: transform;
-  /* Add this line */
 }
 
 .hero-logo-desktop {
   display: block;
+  will-change: transform;
 }
 
 .hero-logo-mobile {
   display: none;
+  will-change: transform;
 }
 
 /* ================= NAVIGATION ================= */
@@ -188,6 +204,7 @@ p {
   list-style: none;
   display: flex;
   gap: 2rem;
+  font-weight: 400;
 }
 
 .nav-list a {
@@ -232,8 +249,6 @@ p {
   display: flex;
   flex-wrap: wrap;
   gap: 2rem;
-  will-change: transform;
-  /* Add this line */
 }
 
 .page-text {
@@ -285,8 +300,6 @@ p {
   gap: 2rem;
   height: 50vh;
   margin-bottom: 0;
-  will-change: transform;
-  /* Add this line */
 }
 
 .footer-title {
@@ -636,11 +649,14 @@ p {
 
 
 
-/* 1. Use Helvetica Neue Thin + weight 200 on all menu items */
-.nav-list a,
+.nav-list a {
+  font-family: 'Helvetica Neue', Arial, sans-serif;
+  font-weight: 400;
+}
+
 .slide-nav-item a {
   font-family: 'Helvetica Neue', Arial, sans-serif;
-  font-weight: 200;
+  font-weight: 100;
 }
 
 /* 2. Thin lines for open (“=”) and close (“×”) buttons */
