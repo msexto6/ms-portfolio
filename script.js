@@ -83,14 +83,11 @@ function updateParallax() {
   // Get scroll position
   const scrollY = window.scrollY || window.pageYOffset || 0;
   
-  console.log('Parallax update called, scrollY:', scrollY);
-  
   // Background video moves slower (parallax effect)
   const backgroundVideo = document.querySelector('.background-video');
   if (backgroundVideo) {
     const videoOffset = scrollY * -0.5; // Negative to move up as we scroll down
     backgroundVideo.style.transform = `translateY(${videoOffset}px)`;
-    console.log('Video parallax applied:', videoOffset);
   }
   
   // Hero section parallax
@@ -98,7 +95,6 @@ function updateParallax() {
   if (hero) {
     const heroOffset = scrollY * -0.3; // Slower movement
     hero.style.transform = `translateY(${heroOffset}px)`;
-    console.log('Hero parallax applied:', heroOffset);
   }
   
   // Hero logo parallax - even slower
@@ -108,13 +104,11 @@ function updateParallax() {
   if (heroLogoDesktop && window.innerWidth > 768) {
     const logoOffset = scrollY * -0.2;
     heroLogoDesktop.style.transform = `translateY(${logoOffset}px)`;
-    console.log('Desktop logo parallax applied:', logoOffset);
   }
   
   if (heroLogoMobile && window.innerWidth <= 768) {
     const logoOffset = scrollY * -0.2;
     heroLogoMobile.style.transform = `translateY(${logoOffset}px)`;
-    console.log('Mobile logo parallax applied:', logoOffset);
   }
   
   scrollRAF = null;
@@ -311,9 +305,6 @@ function init() {
 
   // Set up the intersection observer for floating button
   floatingButtonObserver = setupFloatingButtonObserver();
-  
-  // Test if parallax is working at all
-  console.log('Parallax initialized');
   
   // Force initial parallax update
   updateParallax();
