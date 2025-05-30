@@ -401,7 +401,7 @@ p {
   .hero-logo-mobile {
     width: 90vw;
     left: 4vw;
-    padding-bottom: 3rem;
+    padding-bottom: 10rem;
     /* or 2vw or whatever spacing you want */
   }
 
