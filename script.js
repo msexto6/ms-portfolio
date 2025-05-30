@@ -32,7 +32,6 @@ let scrollDirection = 1;
 let ticking = false;
 let currentRotation = 0;
 let rotationSpeed = 0.1;
-let scrollRAF = null;
 
 // Store observers for cleanup
 let intersectionObserver = null;
@@ -80,45 +79,42 @@ function animateRotation() {
 
 // ================= PARALLAX FUNCTIONS =================
 function updateParallax() {
-  // Get scroll position
-  const scrollY = window.scrollY || window.pageYOffset || 0;
-  
-  // Background video moves slower (parallax effect)
-  const backgroundVideo = document.querySelector('.background-video');
-  if (backgroundVideo) {
-    const videoOffset = scrollY * -0.5; // Negative to move up as we scroll down
-    backgroundVideo.style.transform = `translateY(${videoOffset}px)`;
-  }
-  
-  // Hero section parallax
+  const scrollY = window.pageYOffset;
+
   const hero = document.querySelector('.hero');
-  if (hero) {
-    const heroOffset = scrollY * -0.3; // Slower movement
-    hero.style.transform = `translateY(${heroOffset}px)`;
-  }
-  
-  // Hero logo parallax - even slower
+  if (hero) hero.style.transform = `translate3d(0, ${scrollY * -0.1}px, 0)`;
+
+  const pageContent = document.querySelector('.page-content');
+  if (pageContent) pageContent.style.transform = `translate3d(0, ${scrollY * -0.15}px, 0)`;
+
   const heroLogoDesktop = document.querySelector('.hero-logo-desktop');
   const heroLogoMobile = document.querySelector('.hero-logo-mobile');
-  
-  if (heroLogoDesktop && window.innerWidth > 768) {
-    const logoOffset = scrollY * -0.2;
-    heroLogoDesktop.style.transform = `translateY(${logoOffset}px)`;
+
+  if (heroLogoDesktop) {
+    if (window.innerWidth > 768) {
+      const horizontalOffset = scrollY * 0.3;
+      heroLogoDesktop.style.transform = `translate3d(-${horizontalOffset}px, ${scrollY * -0.05}px, 0)`;
+    } else {
+      heroLogoDesktop.style.transform = `translate3d(0, ${scrollY * -0.05}px, 0)`;
+    }
   }
-  
-  if (heroLogoMobile && window.innerWidth <= 768) {
-    const logoOffset = scrollY * -0.2;
-    heroLogoMobile.style.transform = `translateY(${logoOffset}px)`;
+
+  if (heroLogoMobile) {
+    heroLogoMobile.style.transform = `translate3d(0, ${scrollY * -0.05}px, 0)`;
   }
-  
-  scrollRAF = null;
+
+  const footer = document.querySelector('.footer');
+  if (footer) footer.style.transform = `translate3d(0, ${scrollY * -0.15}px, 0)`;
+
+  lastScrollY = scrollY;
+  ticking = false;
 }
 
 function requestTick() {
-  if (scrollRAF) {
-    cancelAnimationFrame(scrollRAF);
+  if (!ticking) {
+    requestAnimationFrame(updateParallax);
+    ticking = true;
   }
-  scrollRAF = requestAnimationFrame(updateParallax);
 }
 
 // ================= MENU FUNCTIONS =================
@@ -305,9 +301,6 @@ function init() {
 
   // Set up the intersection observer for floating button
   floatingButtonObserver = setupFloatingButtonObserver();
-  
-  // Force initial parallax update
-  updateParallax();
 }
 
 // ================= PAGE LIFECYCLE =================

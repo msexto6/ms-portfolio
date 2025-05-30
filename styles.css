@@ -21,18 +21,6 @@
   font-display: swap;
 }
 
-
-@font-face {
-  font-family: 'Helvetica Neue';
-  font-weight: 400;
-  font-style: normal;
-  src: url('./public/helveticaneueroman-webfont.woff2') format('woff2'),
-    url('./public/helveticaneueroman-webfont.woff') format('woff'),
-    url('./public/HelveticaNeueRoman.ttf') format('truetype'),
-    url('./public/HelveticaNeueRoman.otf') format('opentype');
-  font-display: swap;
-}
-
 :root {
   --primary: #5000ff;
   --bg: #000000;
@@ -41,6 +29,7 @@
   --gutter: 1rem;
   --pad: 4rem 8vw;
   --pad-sm: 2rem 5vw;
+
   --fs-base: 1.0rem;
   --fs-lg: 2rem;
   --fs-xl: 3.5rem;
@@ -53,7 +42,7 @@ body {
   margin: 0;
   padding: 0;
   overflow-x: hidden;
-  min-height: 100%;
+  height: 100%;
   font-size: var(--fs-base);
   font-family: var(--font-sans);
   font-weight: 300;
@@ -73,12 +62,13 @@ p {
 
 
 
+
+
 .fade-in {
   opacity: 0;
   transform: translateY(20%);
   transition: transform 0.8s ease-out, opacity 0.8s ease-out;
 }
-
 
 .animated {
   opacity: 1;
@@ -133,11 +123,7 @@ p {
   padding: 0;
   overflow: hidden;
   will-change: transform;
-  transform: translateZ(0);
-  /* Force GPU acceleration */
-  -webkit-transform: translateZ(0);
-  backface-visibility: hidden;
-  -webkit-backface-visibility: hidden;
+  /* Add this line */
 }
 
 .background-video {
@@ -166,7 +152,7 @@ p {
 
 .hero-logo {
   position: absolute;
-  bottom: 8rem;
+  bottom: 6rem;
   left: 0vw;
   width: 98vw;
   max-width: 98vw;
@@ -174,16 +160,15 @@ p {
   z-index: 1;
   pointer-events: none;
   will-change: transform;
+  /* Add this line */
 }
 
 .hero-logo-desktop {
   display: block;
-  will-change: transform;
 }
 
 .hero-logo-mobile {
   display: none;
-  will-change: transform;
 }
 
 /* ================= NAVIGATION ================= */
@@ -203,7 +188,6 @@ p {
   list-style: none;
   display: flex;
   gap: 2rem;
-  font-weight: 400;
 }
 
 .nav-list a {
@@ -244,13 +228,12 @@ p {
 
 .page-content {
   background-color: #ffffff;
-  padding: 2rem 8vw 4rem 8vw;
-  /* Reduced top padding from 4rem to 2rem */
+  padding: var(--pad);
   display: flex;
   flex-wrap: wrap;
   gap: 2rem;
-  min-height: 100vh;
-  /* Ensure content is tall enough */
+  will-change: transform;
+  /* Add this line */
 }
 
 .page-text {
@@ -300,9 +283,10 @@ p {
   flex-direction: column;
   align-items: flex-start;
   gap: 2rem;
-  min-height: 100vh;
-  /* Changed from 50vh to ensure scrolling */
+  height: 50vh;
   margin-bottom: 0;
+  will-change: transform;
+  /* Add this line */
 }
 
 .footer-title {
@@ -393,7 +377,6 @@ p {
   .hero-logo-mobile {
     width: 90vw;
     left: 4vw;
-    bottom: 8rem;
     /* or 2vw or whatever spacing you want */
   }
 
@@ -479,8 +462,7 @@ p {
   width: 60px;
   height: 60px;
   background: var(--bg);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  /* Added thin white outline */
+  border: none;
   border-radius: 50%;
   cursor: pointer;
   z-index: 1000;
@@ -492,7 +474,7 @@ p {
   opacity: 0;
   visibility: hidden;
   transform: translateY(-10px);
-  transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.3s ease, border-color 0.3s ease;
+  transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.3s ease;
 }
 
 .floating-menu-btn.show {
@@ -510,8 +492,6 @@ p {
 
 .floating-menu-btn:hover {
   transform: scale(1.05);
-  border-color: rgba(255, 255, 255, 0.5);
-  /* Border becomes more visible on hover */
 }
 
 .floating-menu-btn.show:hover {
@@ -656,14 +636,11 @@ p {
 
 
 
-.nav-list a {
-  font-family: 'Helvetica Neue', Arial, sans-serif;
-  font-weight: 400;
-}
-
+/* 1. Use Helvetica Neue Thin + weight 200 on all menu items */
+.nav-list a,
 .slide-nav-item a {
   font-family: 'Helvetica Neue', Arial, sans-serif;
-  font-weight: 100;
+  font-weight: 200;
 }
 
 /* 2. Thin lines for open (“=”) and close (“×”) buttons */
