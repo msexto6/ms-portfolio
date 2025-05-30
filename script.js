@@ -41,6 +41,58 @@ let floatingButtonObserver = null;
 let isMenuOpen = false;
 let headerHeight = 0;
 
+// ================= MOBILE VIDEO DETECTION =================
+function isMobileDevice() {
+  return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth <= 768;
+}
+
+function setupMobileVideo() {
+  const video = document.querySelector('.background-video');
+  if (!video) return;
+
+  if (isMobileDevice()) {
+    // Update source elements for mobile
+    const sources = video.querySelectorAll('source');
+    sources.forEach(source => {
+      const src = source.getAttribute('src');
+      if (src.includes('.mp4')) {
+        source.setAttribute('src', './public/wave-loop-mobile-5.30.mp4');
+      } else if (src.includes('.webm')) {
+        source.setAttribute('src', './public/wave-loop-mobile-5.30.webm');
+      }
+    });
+    
+    // Force video to reload with new sources
+    video.load();
+    
+    // Mobile video sizing fix
+    function resizeMobileVideo() {
+      const videoRect = video.getBoundingClientRect();
+      const viewportWidth = window.innerWidth;
+      const viewportHeight = window.innerHeight;
+      
+      // If video doesn't fill viewport, apply additional scaling
+      if (videoRect.width < viewportWidth || videoRect.height < viewportHeight) {
+        const scaleX = viewportWidth / videoRect.width;
+        const scaleY = viewportHeight / videoRect.height;
+        const scale = Math.max(scaleX, scaleY);
+        video.style.transform = `scale(${scale})`;
+      }
+    }
+    
+    // Attempt to play after loading
+    video.addEventListener('loadeddata', () => {
+      resizeMobileVideo();
+      video.play().catch(e => {
+        console.log('Video autoplay prevented:', e);
+      });
+    });
+    
+    // Also resize on window resize
+    window.addEventListener('resize', resizeMobileVideo);
+  }
+}
+
 // ================= SCROLL DIRECTION TRACKING =================
 function updateScrollDirection() {
   const currentY = window.scrollY;
@@ -294,6 +346,7 @@ function removeEventListeners() {
 
 // ================= INITIALIZATION =================
 function init() {
+  setupMobileVideo();
   calculateHeaderHeight();
   animateOnScroll();
   animateRotation();
