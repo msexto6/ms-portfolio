@@ -1,6 +1,47 @@
 
 
 
+// TEST - Script is loading
+console.log('Script.js loaded successfully!');
+
+// Alternative scroll detection using requestAnimationFrame
+let lastKnownScrollY = 0;
+let scrollTicking = false;
+
+function checkScrollChange() {
+  const currentScrollY = window.pageYOffset;
+  const currentScrollY2 = window.scrollY;
+  const currentScrollY3 = document.documentElement.scrollTop;
+  
+  // Log scroll position every 60 frames (about once per second)
+  if (Math.random() < 0.016) {
+    console.log('Scroll positions - pageYOffset:', currentScrollY, 'scrollY:', currentScrollY2, 'scrollTop:', currentScrollY3);
+  }
+  
+  if (currentScrollY !== lastKnownScrollY) {
+    console.log('Scroll detected via RAF, scrollY:', currentScrollY);
+    
+    // Apply parallax
+    const heroLogoDesktop = document.querySelector('.hero-logo-desktop');
+    const heroLogoMobile = document.querySelector('.hero-logo-mobile');
+    
+    if (heroLogoDesktop) {
+      heroLogoDesktop.style.transform = `translate3d(0, ${currentScrollY * 0.2}px, 0)`;
+    }
+    
+    if (heroLogoMobile) {
+      heroLogoMobile.style.transform = `translate3d(0, ${currentScrollY * 0.2}px, 0)`;
+    }
+    
+    lastKnownScrollY = currentScrollY;
+  }
+  
+  requestAnimationFrame(checkScrollChange);
+}
+
+// Start the scroll checking loop
+requestAnimationFrame(checkScrollChange);
+console.log('RAF scroll detection started');
 
 // ────────────────────────────────────────────────
 // PERMANENTLY DISABLE PINCH & GESTURE ZOOM
@@ -132,33 +173,27 @@ function animateRotation() {
 // ================= PARALLAX FUNCTIONS =================
 function updateParallax() {
   const scrollY = window.pageYOffset;
+  console.log('Parallax running, scrollY:', scrollY); // Debug line
 
-  const hero = document.querySelector('.hero');
-  if (hero) hero.style.transform = `translate3d(0, ${scrollY * -0.1}px, 0)`;
-
-  const pageContent = document.querySelector('.page-content');
-  if (pageContent) pageContent.style.transform = `translate3d(0, ${scrollY * -0.15}px, 0)`;
-
+  // Only apply parallax to hero logos - vertical motion only
   const heroLogoDesktop = document.querySelector('.hero-logo-desktop');
   const heroLogoMobile = document.querySelector('.hero-logo-mobile');
 
+  console.log('Found desktop logo:', !!heroLogoDesktop); // Debug line
+  console.log('Found mobile logo:', !!heroLogoMobile); // Debug line
+
   if (heroLogoDesktop) {
-    if (window.innerWidth > 768) {
-      const horizontalOffset = scrollY * 0.3;
-      heroLogoDesktop.style.transform = `translate3d(-${horizontalOffset}px, ${scrollY * -0.05}px, 0)`;
-    } else {
-      heroLogoDesktop.style.transform = `translate3d(0, ${scrollY * -0.05}px, 0)`;
-    }
+    const transform = `translate3d(0, ${scrollY * 0.2}px, 0)`;
+    console.log('Applying desktop transform:', transform); // Debug line
+    heroLogoDesktop.style.transform = transform;
   }
 
   if (heroLogoMobile) {
-    heroLogoMobile.style.transform = `translate3d(0, ${scrollY * -0.05}px, 0)`;
+    const transform = `translate3d(0, ${scrollY * 0.2}px, 0)`;
+    console.log('Applying mobile transform:', transform); // Debug line
+    heroLogoMobile.style.transform = transform;
   }
 
-  const footer = document.querySelector('.footer');
-  if (footer) footer.style.transform = `translate3d(0, ${scrollY * -0.15}px, 0)`;
-
-  lastScrollY = scrollY;
   ticking = false;
 }
 
@@ -276,9 +311,36 @@ function toggleMobileMenu() {
 
 // ================= EVENT LISTENERS =================
 function addEventListeners() {
-  // Scroll event listeners
+  // Direct scroll listener for parallax
+  window.addEventListener('scroll', function() {
+    console.log('Direct scroll event detected!');
+    const scrollY = window.pageYOffset;
+    console.log('ScrollY:', scrollY);
+    
+    // Apply parallax directly
+    const heroLogoDesktop = document.querySelector('.hero-logo-desktop');
+    const heroLogoMobile = document.querySelector('.hero-logo-mobile');
+    
+    if (heroLogoDesktop) {
+      const transform = `translate3d(0, ${scrollY * 0.2}px, 0)`;
+      console.log('Applying desktop transform:', transform);
+      heroLogoDesktop.style.transform = transform;
+    }
+    
+    if (heroLogoMobile) {
+      const transform = `translate3d(0, ${scrollY * 0.2}px, 0)`;
+      console.log('Applying mobile transform:', transform);
+      heroLogoMobile.style.transform = transform;
+    }
+  });
+  
+  // Keep other event listeners
   window.addEventListener("scroll", updateScrollDirection);
   window.addEventListener('scroll', requestTick, { passive: true });
+  // Add a simple scroll test
+  window.addEventListener('scroll', function() {
+    console.log('Scroll event detected!');
+  });
   // Removed handleFloatingButton from scroll - now using Intersection Observer
 
   // Wheel event for scroll direction
@@ -346,11 +408,13 @@ function removeEventListeners() {
 
 // ================= INITIALIZATION =================
 function init() {
+  console.log('Init function called!');
   setupMobileVideo();
   calculateHeaderHeight();
   animateOnScroll();
   animateRotation();
   addEventListeners();
+  console.log('Event listeners added!');
 
   // Set up the intersection observer for floating button
   floatingButtonObserver = setupFloatingButtonObserver();

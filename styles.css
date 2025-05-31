@@ -53,7 +53,6 @@ body {
   margin: 0;
   padding: 0;
   overflow-x: hidden;
-  height: 100%;
   font-size: var(--fs-base);
   font-family: var(--font-sans);
   font-weight: 300;
@@ -133,8 +132,6 @@ p {
   margin: 0;
   padding: 0;
   overflow: hidden;
-  will-change: transform;
-  /* Add this line */
 }
 
 .background-video {
@@ -244,8 +241,6 @@ p {
   display: flex;
   flex-wrap: wrap;
   gap: 2rem;
-  will-change: transform;
-  /* Add this line */
 }
 
 .page-text {
@@ -297,8 +292,6 @@ p {
   gap: 2rem;
   height: 50vh;
   margin-bottom: 0;
-  will-change: transform;
-  /* Add this line */
 }
 
 .footer-title {
@@ -401,7 +394,7 @@ p {
   .hero-logo-mobile {
     width: 90vw;
     left: 4vw;
-    padding-bottom: 10rem;
+    padding-bottom: 5rem;
     /* or 2vw or whatever spacing you want */
   }
 
