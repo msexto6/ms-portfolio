@@ -159,7 +159,7 @@ function initLocomotiveScroll() {
     class: 'is-revealed',
     smartphone: {
       smooth: true,
-      multiplier: 0.6,
+      multiplier: 1.2, // Faster scroll on mobile
     },
     tablet: {
       smooth: true,
