@@ -1,3 +1,51 @@
+/* At the very top of your styles.css */
+html {
+  box-sizing: border-box;
+  overflow: hidden;
+  max-height: 100%;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: inherit;
+}
+
+/* Fallback for no JavaScript */
+html.no-js .fade-in {
+  opacity: 1;
+  transform: translateY(0);
+  transition: none;
+}
+
+html.no-js .floating-menu-btn {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+/* CSS-only animation fallback for .line */
+.line-wrapper {
+  opacity: 1 !important;
+  /* Ensure the wrapper is visible */
+}
+
+.line {
+  animation: slideIn 1.5s cubic-bezier(0.19, 1, 0.22, 1) forwards;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateY(120%);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
 /* Font Face Declarations */
 @font-face {
   font-family: 'Helvetica Neue';
@@ -40,11 +88,9 @@
   --gutter: 1rem;
   --pad: 4rem 8vw;
   --pad-sm: 2rem 5vw;
-
   --fs-base: 1.0rem;
   --fs-lg: 2rem;
   --fs-xl: 3.5rem;
-
   --font-sans: 'Helvetica Neue', Arial, sans-serif;
 }
 
@@ -53,12 +99,40 @@ body {
   margin: 0;
   padding: 0;
   overflow-x: hidden;
+  overflow-y: hidden;
   font-size: var(--fs-base);
   font-family: var(--font-sans);
   font-weight: 300;
-  /* Light weight for body */
   color: var(--text);
   line-height: 2.3;
+  -webkit-overflow-scrolling: touch;
+  height: 100%;
+  max-height: 100%;
+  width: 100%;
+  background-color: #5000ff;
+}
+
+/* Locomotive Scroll Setup */
+html.has-scroll-smooth {
+  overflow: hidden;
+  height: 100%;
+}
+
+html.has-scroll-dragging {
+  user-select: none;
+}
+
+.has-scroll-smooth body {
+  overflow: hidden;
+}
+
+[data-scroll-container] {
+  width: 100%;
+  position: relative;
+  perspective: 1px;
+  overflow: hidden;
+  background-color: #000000;
+  min-height: unset;
 }
 
 /* Typography */
@@ -70,9 +144,11 @@ p {
   margin-bottom: var(--gutter);
 }
 
-
-
-
+main,
+section {
+  margin: 0;
+  padding: 0;
+}
 
 .fade-in {
   opacity: 0;
@@ -88,11 +164,12 @@ p {
 h1 {
   font-size: var(--fs-xl);
   font-weight: 200;
-  /* Thin weight for headlines */
   letter-spacing: -0.02rem;
   line-height: 1.1;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  position: relative;
+  z-index: 3;
 }
 
 /* Headline Animation Styles */
@@ -102,6 +179,7 @@ h1 .line-wrapper,
   overflow: visible;
   vertical-align: top;
   line-height: 1.1;
+  z-index: 3;
 }
 
 h1 .line,
@@ -123,8 +201,7 @@ p {
   max-width: 100%;
 }
 
-/* ================= HERO SECTION ================= */
-
+/* Hero Section */
 .hero {
   position: relative;
   width: 100vw;
@@ -135,13 +212,12 @@ p {
 }
 
 .background-video {
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
   width: 100vw;
   height: 100vh;
   object-fit: cover;
-  background-color: #000;
   z-index: -1;
 }
 
@@ -149,7 +225,6 @@ p {
   position: absolute;
   top: 0;
   right: 0;
-  height: auto;
   width: 100vw;
   max-height: 30vh;
   object-fit: none;
@@ -168,7 +243,6 @@ p {
   z-index: 1;
   pointer-events: none;
   will-change: transform;
-  /* Add this line */
 }
 
 .hero-logo-desktop {
@@ -179,8 +253,7 @@ p {
   display: none;
 }
 
-/* ================= NAVIGATION ================= */
-
+/* Navigation */
 .site-header {
   position: absolute;
   top: 0;
@@ -189,7 +262,7 @@ p {
   padding: 0.8rem 6vw;
   display: flex;
   justify-content: flex-end;
-  z-index: 2;
+  z-index: 3;
 }
 
 .nav-list {
@@ -205,14 +278,12 @@ p {
   font-weight: 400;
 }
 
-
-
 .nav-item {
   position: relative;
   padding-bottom: 0.8rem;
 }
 
-.nav-item.active::after {
+.nav-item::after {
   content: "";
   position: absolute;
   bottom: 0.1rem;
@@ -223,6 +294,23 @@ p {
   background: url('./public/purple-menu-dot.svg') no-repeat center;
   background-size: contain;
   pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+/* Show dot on hover for any item */
+.nav-item:hover::after {
+  opacity: 1;
+}
+
+/* Show dot on Home only when no items are being hovered AND Home is active */
+.nav-list:not(:hover) .nav-item.active::after {
+  opacity: 1;
+}
+
+/* Hide Home dot when any other item is being hovered */
+.nav-list:hover .nav-item.active:not(:hover)::after {
+  opacity: 0;
 }
 
 .nav-toggle {
@@ -230,11 +318,13 @@ p {
   background: none;
   border: none;
   color: var(--text);
-  font-size: 1.5rem;
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  font-weight: 400;
+  cursor: pointer;
 }
 
-/* ================= PAGE CONTENT ================= */
-
+/* Page Content */
 .page-content {
   background-color: #ffffff;
   padding: var(--pad);
@@ -251,25 +341,32 @@ p {
 
 .portfolio-peek {
   width: 100%;
-  height: auto;
-  /* Remove: animation: spin 50s linear infinite; */
+  height: 100%;
+  aspect-ratio: 1;
   transform-origin: center center;
   position: relative;
   z-index: 2;
+  display: block;
+  margin: 0;
+  padding: 0;
+  margin-bottom: 13%;
 }
 
 .portfolio-peek-wrapper {
   position: relative;
   width: 40vw;
   max-width: 40vw;
-  height: auto;
+  height: 40vw;
   align-self: flex-start;
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
-
 
 .purple-circle {
   position: absolute;
-  top: 49%;
+  top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   width: 35%;
@@ -279,36 +376,40 @@ p {
   z-index: 1;
 }
 
-/* ================= FOOTER ================= */
-
+/* Footer */
 .footer {
   background: var(--bg);
   color: var(--text-light);
   padding: var(--pad);
+  padding-bottom: 6rem;
+  /* Extra bottom padding */
   text-align: left;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   gap: 2rem;
-  height: 50vh;
+  position: relative;
+  z-index: 1;
   margin-bottom: 0;
 }
 
 .footer-title {
   font-size: var(--fs-xl);
   font-weight: 200;
-  /* Thin weight for headlines */
   letter-spacing: -0.02rem;
   max-width: 50vw;
   line-height: 1.1;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  position: relative;
+  z-index: 3;
 }
 
 .footer-contact {
   display: flex;
   flex-wrap: wrap;
   gap: var(--gutter);
+  align-items: center;
 }
 
 .btn {
@@ -359,8 +460,53 @@ p {
   opacity: 0.9;
 }
 
-/* ================= ROTATION ANIMATION ================= */
+/* Magnetic Button Effects */
+.magnetic-btn {
+  position: relative;
+  transition: all 0.3s ease;
+  will-change: transform;
+}
 
+/* Add magnetic class to nav items */
+.nav-item a,
+.slide-nav-item a {
+  position: relative;
+  transition: all 0.3s ease;
+  will-change: transform;
+}
+
+.magnetic-btn:hover,
+.nav-item a:hover,
+.slide-nav-item a:hover {
+  transform: scale(1.05);
+}
+
+.magnetic-btn.is-magnetic,
+.nav-item a.is-magnetic,
+.slide-nav-item a.is-magnetic {
+  transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.btn-primary.magnetic-btn:hover {
+  transform: scale(1.1);
+  box-shadow: 0 10px 30px rgba(80, 0, 255, 0.3);
+}
+
+.btn-outline.magnetic-btn:hover {
+  transform: scale(1.02);
+  border-color: rgba(255, 255, 255, 0.8);
+}
+
+.floating-menu-btn.magnetic-btn:hover {
+  transform: scale(1.1);
+}
+
+
+
+
+
+
+/* Rotation Animation */
 @keyframes spin {
   from {
     transform: rotate(0deg);
@@ -371,35 +517,39 @@ p {
   }
 }
 
-/* ================= RESPONSIVE (Mobile) ================= */
 
+
+/* Responsive (Mobile) */
 @media (max-width: 768px) {
   .nav-list {
     display: none;
   }
 
-  /* Mobile video positioning fix */
+  .hero {
+    min-height: 100vh;
+    overflow: visible;
+  }
+
   .background-video {
     width: 100vw;
     height: 100vh;
     object-fit: cover;
     object-position: center center;
-    /* Alternative approach for mobile videos */
     min-width: 100vw;
     min-height: 100vh;
-    transform: scale(1.1);
-    /* Slightly scale up to ensure no gaps */
+    transform: scale(1.05);
   }
 
   .hero-logo-mobile {
     width: 90vw;
     left: 4vw;
     padding-bottom: 5rem;
-    /* or 2vw or whatever spacing you want */
   }
 
   .nav-toggle {
     display: block;
+    margin-top: 0.5rem;
+    /* Add space above Menu */
   }
 
   .nav-item.active::after {
@@ -425,23 +575,60 @@ p {
     max-width: 100%;
   }
 
-
   .portfolio-peek-wrapper {
+    width: 90vw;
+    max-width: 90vw;
+    height: 90vw;
+    margin: 0rem 4rem 2rem 0rem;
+    align-self: flex-start;
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+
+  .portfolio-peek {
     width: 100%;
-    max-width: 100%;
+    height: 100%;
+    margin-bottom: 0;
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 2;
+  }
+
+  .purple-circle {
+    width: 35%;
+    height: 35%;
+    position: absolute;
+    top: 56%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1;
+    background: var(--primary);
+    border-radius: 50%;
   }
 
   .footer {
-    height: 80vh;
+    height: auto;
+    position: relative;
+    z-index: 1;
+    margin-top: 0;
+    padding-bottom: 10rem;
+    gap: 2rem;
   }
-
-
 
   .footer-contact {
     flex-direction: column;
     align-items: flex-start;
     gap: 2rem;
-    /* Reduced from 4rem */
+  }
+
+  .footer-contact .btn {
+    display: inline-flex !important;
+    /* Ensure they display */
   }
 
   .footer-title {
@@ -452,12 +639,9 @@ p {
     display: none;
   }
 
-  /* Mobile Menu Styles */
   .slide-menu {
     width: 100vw;
   }
-
-
 
   .slide-nav-item a {
     font-size: 2.5rem;
@@ -468,11 +652,7 @@ p {
   }
 }
 
-
-
-
-/* ================= FLOATING MENU BUTTON ================= */
-
+/* Floating Menu Button */
 .floating-menu-btn {
   position: fixed;
   top: 2rem;
@@ -480,10 +660,11 @@ p {
   width: 60px;
   height: 60px;
   background: var(--bg);
-  border: none;
+  border: 1px solid #ffffff;
   border-radius: 50%;
   cursor: pointer;
-  z-index: 1000;
+  z-index: 1002;
+  /* Higher than slide menu */
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -491,7 +672,7 @@ p {
   gap: 4px;
   opacity: 0;
   visibility: hidden;
-  transform: translateY(-10px);
+  transform: translateY(0px);
   transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.3s ease;
 }
 
@@ -503,7 +684,7 @@ p {
 
 .hamburger-line {
   width: 20px;
-  height: 2px;
+  height: 1px;
   background: var(--text-light);
   transition: all 0.3s ease;
 }
@@ -516,8 +697,7 @@ p {
   transform: scale(1.05);
 }
 
-/* ================= SLIDE-IN MENU ================= */
-
+/* Slide-in Menu */
 .slide-menu {
   position: fixed;
   top: 0;
@@ -526,14 +706,9 @@ p {
   background: var(--bg);
   z-index: 1001;
   transform: translate3d(100%, 0, 0);
-  transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   will-change: transform;
   display: flex;
   flex-direction: column;
-}
-
-.slide-menu.open {
-  transform: translate3d(0, 0, 0);
 }
 
 .close-btn {
@@ -558,10 +733,26 @@ p {
 }
 
 .close-x {
-  color: var(--text-light);
-  font-size: 24px;
-  font-weight: 200;
-  line-height: 1;
+  visibility: hidden;
+}
+
+.close-btn::before,
+.close-btn::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 24px;
+  height: 1px;
+  background: var(--text-light);
+}
+
+.close-btn::before {
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+
+.close-btn::after {
+  transform: translate(-50%, -50%) rotate(-45deg);
 }
 
 .menu-content {
@@ -586,6 +777,8 @@ p {
 }
 
 .slide-nav-item {
+  position: relative;
+  padding-left: 4rem;
   margin-bottom: 2rem;
 }
 
@@ -604,21 +797,49 @@ p {
   opacity: 0.7;
 }
 
-.slide-nav-item:first-child {
-  position: relative;
-}
-
-.slide-nav-item:first-child::before {
-  content: "•";
+.slide-nav-item::before {
+  content: '';
   position: absolute;
-  left: -2rem;
-  color: var(--text-light);
-  font-size: 3rem;
-  line-height: 1.2;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 10px;
+  height: 10px;
+  background: url('./public/purple-menu-dot.svg') no-repeat center;
+  background-size: contain;
+  opacity: 0;
+  transition: opacity 0.3s ease;
 }
 
-/* ================= RESPONSIVE (Desktop) ================= */
+/* Show dot on hover for any item */
+.slide-nav-item:hover::before {
+  opacity: 1;
+}
 
+/* Show dot on Home only when no items are being hovered AND Home is active */
+.slide-nav-list:not(:hover) .slide-nav-item.active::before {
+  opacity: 1;
+}
+
+/* Hide Home dot when any other item is being hovered */
+.slide-nav-list:hover .slide-nav-item.active:not(:hover)::before {
+  opacity: 0;
+}
+
+.slide-nav-item.active::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 10px;
+  height: 10px;
+  background: url('./public/purple-menu-dot.svg') no-repeat center;
+  background-size: contain;
+  opacity: 1;
+}
+
+/* Responsive (Desktop) */
 @media (min-width: 769px) {
   .page-content {
     display: flex;
@@ -637,108 +858,9 @@ p {
     flex-wrap: nowrap;
     align-items: center;
     gap: 4vw;
-    /* Viewport-based spacing */
   }
 
-  /* Desktop Menu Styles */
   .slide-menu {
-    width: 50vw;
+    width: 45vw;
   }
-
-  .floating-menu-btn {
-    display: flex;
-  }
-}
-
-
-
-
-
-
-
-/* 2. Thin lines for open (“=”) and close (“×”) buttons */
-/* — Open button (hamburger) */
-.hamburger-line {
-  width: 20px;
-  height: 1px;
-  /* was 2px */
-  background: var(--text-light);
-}
-
-/* — Close button: hide the “×” and draw two 1px lines via pseudo-elements */
-.close-x {
-  visibility: hidden;
-}
-
-.close-btn {
-  position: absolute;
-  /* adjust these to move it: */
-  top: 2rem;
-  /* distance from the top of the viewport or parent */
-  right: 2rem;
-  /* distance from the right edge */
-  width: 60px;
-  /* overall diameter of the purple circle */
-  height: 60px;
-  /* ditto */
-  border-radius: 50%;
-  background: #5000ff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-}
-
-.close-btn::before,
-.close-btn::after {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 24px;
-  height: 1px;
-  /* thin */
-  background: var(--text-light);
-}
-
-.close-btn::before {
-  transform: translate(-50%, -50%) rotate(45deg);
-}
-
-.close-btn::after {
-  transform: translate(-50%, -50%) rotate(-45deg);
-}
-
-/* 3 & 4. Bullet only on the active page, at 50% size */
-/* Reset default list styling */
-.slide-nav-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-/* Make room for the bullet */
-.slide-nav-item {
-  position: relative;
-  padding-left: 4rem;
-  /* adjust as needed */
-  margin-bottom: 2rem;
-}
-
-/* Only the “active” item gets a bullet */
-.slide-nav-item.active::before {
-  content: '•';
-  position: absolute;
-  left: 0;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 0.5em;
-  /* 50% smaller */
-  line-height: 1;
-  color: var(--text-light);
-}
-
-/* Ensure non-active items have no bullet */
-.slide-nav-item:not(.active)::before {
-  content: none;
 }
