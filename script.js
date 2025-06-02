@@ -152,10 +152,21 @@ function setupInitialStates() {
 
 // ================= LOCOMOTIVE SCROLL SETUP =================
 function initLocomotiveScroll() {
+  console.log('📱 Device detection:', {
+    userAgent: navigator.userAgent,
+    screenWidth: window.innerWidth,
+    isMobileFunction: isMobileDevice()
+  });
+
+  const isMobileDevice = window.innerWidth <= 768 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+  const baseMultiplier = isMobileDevice ? 2.0 : 0.8;
+  
+  console.log('📱 Using multiplier:', baseMultiplier, 'for device type:', isMobileDevice ? 'mobile' : 'desktop');
+
   locoScroll = new LocomotiveScroll({
     el: document.querySelector('[data-scroll-container]'),
     smooth: true,
-    multiplier: 0.8,
+    multiplier: baseMultiplier, // Use our calculated multiplier
     class: 'is-revealed',
     smartphone: {
       smooth: true,
