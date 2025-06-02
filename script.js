@@ -159,7 +159,7 @@ function initLocomotiveScroll() {
     class: 'is-revealed',
     smartphone: {
       smooth: true,
-      multiplier: 1.2, // Faster scroll on mobile
+      multiplier: 2.0, // Faster scroll on mobile
     },
     tablet: {
       smooth: true,
@@ -238,19 +238,19 @@ function checkElementsInView() {
 
     // Remove from animated set if element goes out of view (to allow re-animation)
     if (isOutOfView && animatedElements.has(el)) {
-    animatedElements.delete(el);
-    console.log(`Element ${el.className} removed from animated set - can animate again`);
-    
-    // Reset footer buttons to hidden state when they go out of view
-    if (el.classList.contains('footer-contact')) {
-    const buttons = el.querySelectorAll('.btn, a');
-    buttons.forEach(btn => {
-    gsap.set(btn, { opacity: 0, scale: 0.1 }); // Reset on both mobile and desktop
-    });
-    } else {
-    // Reset regular elements to hidden state
-    gsap.set(el, { opacity: 0, y: 40 });
-    }
+      animatedElements.delete(el);
+      console.log(`Element ${el.className} removed from animated set - can animate again`);
+
+      // Reset footer buttons to hidden state when they go out of view
+      if (el.classList.contains('footer-contact')) {
+        const buttons = el.querySelectorAll('.btn, a');
+        buttons.forEach(btn => {
+          gsap.set(btn, { opacity: 0, scale: 0.1 }); // Reset on both mobile and desktop
+        });
+      } else {
+        // Reset regular elements to hidden state
+        gsap.set(el, { opacity: 0, y: 40 });
+      }
     }
 
     if (isInView && !animatedElements.has(el)) {
@@ -272,14 +272,14 @@ function checkElementsInView() {
           buttons.forEach(btn => {
             gsap.set(btn, { opacity: 0, scale: 0.1 });
           });
-          
+
           // Convert to array and sort by vertical position (top to bottom for mobile stack)
           const sortedButtons = Array.from(buttons).sort((a, b) => {
             const rectA = a.getBoundingClientRect();
             const rectB = b.getBoundingClientRect();
             return rectA.top - rectB.top;
           });
-          
+
           // Animate buttons with fade and scale
           gsap.to(sortedButtons, {
             opacity: 1,
