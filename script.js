@@ -163,7 +163,7 @@ function initLocomotiveScroll() {
     },
     tablet: {
       smooth: true,
-      multiplier: 1.2, // Also faster on tablet (in case iPhone is detected as tablet)
+      multiplier: 2.0, // Also faster on tablet (in case iPhone is detected as tablet)
     },
     lerp: 0.1,
     reloadOnContextChange: true,
