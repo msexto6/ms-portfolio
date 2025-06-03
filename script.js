@@ -84,6 +84,20 @@ function setupMobileVideo() {
   const video = document.querySelector('.background-video');
   if (!video) return;
 
+  // Seamless loop optimization
+  video.addEventListener('loadedmetadata', () => {
+    // Set currentTime slightly after the beginning to avoid any initial delay
+    video.currentTime = 0.1;
+  });
+
+  // Force seamless looping by manually restarting before the end
+  video.addEventListener('timeupdate', () => {
+    // When video is close to end, restart from beginning
+    if (video.currentTime >= video.duration - 0.1) {
+      video.currentTime = 0;
+    }
+  });
+
   video.addEventListener('canplaythrough', () => {
     if (locoScroll) {
       locoScroll.update();
