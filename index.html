@@ -14,7 +14,14 @@
 <body>
   <div data-scroll-container>
     <section class="hero">
-      <video class="background-video" autoplay muted loop playsinline webkit-playsinline preload="metadata">
+      <video class="background-video" autoplay muted loop playsinline webkit-playsinline preload="metadata" poster="./public/wave-loop-5.30.jpg">
+        <!-- Mobile sources (for screens 768px and below) -->
+        <source src="./public/wave-loop-mobile-5.30.mp4" type="video/mp4" media="(max-width: 768px)" />
+        <source src="./public/wave-loop-mobile-5.30.webm" type="video/webm" media="(max-width: 768px)" />
+        <!-- Desktop sources (for screens above 768px) -->
+        <source src="./public/wave-loop-5.30.mp4" type="video/mp4" media="(min-width: 769px)" />
+        <source src="./public/wave-loop-5.30.webm" type="video/webm" media="(min-width: 769px)" />
+        <!-- Fallback sources (no media query) -->
         <source src="./public/wave-loop-5.30.mp4" type="video/mp4" />
         <source src="./public/wave-loop-5.30.webm" type="video/webm" />
         Your browser doesn't support HTML5 video.

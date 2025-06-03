@@ -44,12 +44,24 @@ function init() {
 
 // ================= CLEANUP =================
 function cleanup() {
-  if (locoScroll) locoScroll.destroy();
-  if (typeof ScrollTrigger !== 'undefined') {
-    ScrollTrigger.getAll().forEach(trigger => trigger.kill());
-    ScrollTrigger.clearScrollMemory();
-    ScrollTrigger.killAll();
+  try {
+    if (locoScroll && typeof locoScroll.destroy === 'function') {
+      locoScroll.destroy();
+    }
+  } catch (e) {
+    console.log('Cleanup - Locomotive destroy error:', e);
   }
+  
+  try {
+    if (typeof ScrollTrigger !== 'undefined') {
+      ScrollTrigger.getAll().forEach(trigger => trigger.kill());
+      ScrollTrigger.clearScrollMemory();
+      ScrollTrigger.killAll();
+    }
+  } catch (e) {
+    console.log('Cleanup - ScrollTrigger error:', e);
+  }
+  
   console.log('🧹 Cleanup complete');
 }
 
@@ -156,6 +168,10 @@ function initLocomotiveScroll() {
   if (isMobileDevice()) {
     console.log('📱 Mobile device detected - using native scroll');
     
+    // Ensure body can scroll normally on mobile
+    document.body.style.overflow = 'auto';
+    document.documentElement.style.overflow = 'auto';
+    
     // Use native scroll for mobile - just add scroll listener for animations
     window.addEventListener('scroll', () => {
       const scrollY = window.pageYOffset || document.documentElement.scrollTop;
@@ -178,10 +194,22 @@ function initLocomotiveScroll() {
     return;
   }
   
-  // Desktop - use Locomotive Scroll
+  // Desktop - use Locomotive Scroll with safety checks
   console.log('💻 Desktop device detected - using Locomotive Scroll');
   
-  locoScroll = new LocomotiveScroll({
+  // Safety: Destroy any existing instance
+  if (locoScroll) {
+    try {
+      locoScroll.destroy();
+    } catch (e) {
+      console.log('Previous Locomotive instance cleanup:', e);
+    }
+  }
+  
+  // Add a small delay to ensure DOM is ready
+  setTimeout(() => {
+    try {
+      locoScroll = new LocomotiveScroll({
     el: document.querySelector('[data-scroll-container]'),
     smooth: true,
     multiplier: 0.8,
@@ -225,7 +253,21 @@ function initLocomotiveScroll() {
     ScrollTrigger.refresh();
   }
 
-  console.log('🌀 Locomotive Scroll initialized');
+  console.log('🌀 Locomotive Scroll initialized successfully');
+  
+    } catch (error) {
+      console.error('⚠️ Locomotive Scroll initialization failed:', error);
+      // Fallback to native scroll if Locomotive fails
+      document.body.style.overflow = 'auto';
+      document.documentElement.style.overflow = 'auto';
+      
+      window.addEventListener('scroll', () => {
+        const scrollY = window.pageYOffset || document.documentElement.scrollTop;
+        checkElementsInView();
+        updateFloatingButton(scrollY);
+      });
+    }
+  }, 100); // Small delay
 }
 
 // ================= FADE-IN ON SCROLL (GSAP) =================
@@ -498,8 +540,11 @@ function initMagneticButtons() {
     btn.style.willChange = 'auto';
 
     btn.addEventListener('mouseenter', () => {
+      // Reduced scale for slide nav items
+      const scale = btn.closest('.slide-nav-item') ? 1.05 : 1.1;
+      
       gsap.to(btn, {
-        scale: 1.1, // Subtle scale increase
+        scale: scale,
         duration: 0.3,
         ease: 'power2.out',
         force3D: false
@@ -512,9 +557,13 @@ function initMagneticButtons() {
       const rect = btn.getBoundingClientRect();
       const x = e.clientX - rect.left - rect.width / 2;
       const y = e.clientY - rect.top - rect.height / 2;
+      
+      // Reduced movement for slide nav items
+      const multiplier = btn.closest('.slide-nav-item') ? 0.15 : 0.3;
+      
       gsap.to(btn, {
-        x: x * 0.3, // Subtle movement
-        y: y * 0.3, // Subtle movement
+        x: x * multiplier,
+        y: y * multiplier,
         duration: 0.3,
         ease: 'power2.out',
         force3D: false
