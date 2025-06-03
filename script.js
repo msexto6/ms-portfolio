@@ -25,10 +25,20 @@ window.addEventListener('beforeunload', cleanup);
 
 // ================= INIT FUNCTION =================
 function init() {
-  console.log('▶️ init()');
+  console.log('▶️ init() - Screen size:', window.innerWidth + 'x' + window.innerHeight);
 
   // Remove no-js class if JavaScript is enabled
   document.documentElement.classList.remove('no-js');
+  
+  // Force clean state
+  if (locoScroll) {
+    try {
+      locoScroll.destroy();
+      locoScroll = null;
+    } catch (e) {
+      console.log('Init cleanup:', e);
+    }
+  }
 
   disablePinchZoom();
   setupMobileVideo();
@@ -44,24 +54,12 @@ function init() {
 
 // ================= CLEANUP =================
 function cleanup() {
-  try {
-    if (locoScroll && typeof locoScroll.destroy === 'function') {
-      locoScroll.destroy();
-    }
-  } catch (e) {
-    console.log('Cleanup - Locomotive destroy error:', e);
+  if (locoScroll) locoScroll.destroy();
+  if (typeof ScrollTrigger !== 'undefined') {
+    ScrollTrigger.getAll().forEach(trigger => trigger.kill());
+    ScrollTrigger.clearScrollMemory();
+    ScrollTrigger.killAll();
   }
-  
-  try {
-    if (typeof ScrollTrigger !== 'undefined') {
-      ScrollTrigger.getAll().forEach(trigger => trigger.kill());
-      ScrollTrigger.clearScrollMemory();
-      ScrollTrigger.killAll();
-    }
-  } catch (e) {
-    console.log('Cleanup - ScrollTrigger error:', e);
-  }
-  
   console.log('🧹 Cleanup complete');
 }
 
@@ -83,20 +81,6 @@ function disablePinchZoom() {
 function setupMobileVideo() {
   const video = document.querySelector('.background-video');
   if (!video) return;
-
-  // Seamless loop optimization
-  video.addEventListener('loadedmetadata', () => {
-    // Set currentTime slightly after the beginning to avoid any initial delay
-    video.currentTime = 0.1;
-  });
-
-  // Force seamless looping by manually restarting before the end
-  video.addEventListener('timeupdate', () => {
-    // When video is close to end, restart from beginning
-    if (video.currentTime >= video.duration - 0.1) {
-      video.currentTime = 0;
-    }
-  });
 
   video.addEventListener('canplaythrough', () => {
     if (locoScroll) {
@@ -182,10 +166,6 @@ function initLocomotiveScroll() {
   if (isMobileDevice()) {
     console.log('📱 Mobile device detected - using native scroll');
     
-    // Ensure body can scroll normally on mobile
-    document.body.style.overflow = 'auto';
-    document.documentElement.style.overflow = 'auto';
-    
     // Use native scroll for mobile - just add scroll listener for animations
     window.addEventListener('scroll', () => {
       const scrollY = window.pageYOffset || document.documentElement.scrollTop;
@@ -208,22 +188,10 @@ function initLocomotiveScroll() {
     return;
   }
   
-  // Desktop - use Locomotive Scroll with safety checks
+  // Desktop - use Locomotive Scroll
   console.log('💻 Desktop device detected - using Locomotive Scroll');
   
-  // Safety: Destroy any existing instance
-  if (locoScroll) {
-    try {
-      locoScroll.destroy();
-    } catch (e) {
-      console.log('Previous Locomotive instance cleanup:', e);
-    }
-  }
-  
-  // Add a small delay to ensure DOM is ready
-  setTimeout(() => {
-    try {
-      locoScroll = new LocomotiveScroll({
+  locoScroll = new LocomotiveScroll({
     el: document.querySelector('[data-scroll-container]'),
     smooth: true,
     multiplier: 0.8,
@@ -267,21 +235,7 @@ function initLocomotiveScroll() {
     ScrollTrigger.refresh();
   }
 
-  console.log('🌀 Locomotive Scroll initialized successfully');
-  
-    } catch (error) {
-      console.error('⚠️ Locomotive Scroll initialization failed:', error);
-      // Fallback to native scroll if Locomotive fails
-      document.body.style.overflow = 'auto';
-      document.documentElement.style.overflow = 'auto';
-      
-      window.addEventListener('scroll', () => {
-        const scrollY = window.pageYOffset || document.documentElement.scrollTop;
-        checkElementsInView();
-        updateFloatingButton(scrollY);
-      });
-    }
-  }, 100); // Small delay
+  console.log('🌀 Locomotive Scroll initialized');
 }
 
 // ================= FADE-IN ON SCROLL (GSAP) =================
@@ -772,9 +726,19 @@ function forceCheckVisible() {
 
 // ================= HELPER: IS MOBILE =================
 function isMobileDevice() {
-  return (
-    /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-      navigator.userAgent
-    ) || window.innerWidth <= 1024 // Increased to catch iPad
-  );
+  const userAgent = navigator.userAgent.toLowerCase();
+  const isMobileUA = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(userAgent);
+  const isMobileWidth = window.innerWidth <= 768;
+  const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+  
+  const isMobile = isMobileUA || (isMobileWidth && isTouchDevice);
+  
+  console.log('Device detection:', {
+    userAgent: isMobileUA,
+    width: isMobileWidth,
+    touch: isTouchDevice,
+    final: isMobile
+  });
+  
+  return isMobile;
 }
