@@ -113,12 +113,16 @@ function setupInitialStates() {
       console.log('Setting up footer-contact container with buttons:', el);
       // Set the container to be visible
       gsap.set(el, { opacity: 1 });
-      // Set all buttons inside to scale 0.1
-      const buttons = el.querySelectorAll('.btn, a');
-      buttons.forEach(btn => {
-        console.log('Setting up footer button:', btn);
-        gsap.set(btn, { opacity: 0, scale: 0.1 });
-      });
+      
+      // Only hide buttons for animation on desktop
+      if (!isMobileDevice()) {
+        // Set all buttons inside to scale 0.1
+        const buttons = el.querySelectorAll('.btn, a');
+        buttons.forEach(btn => {
+          console.log('Setting up footer button:', btn);
+          gsap.set(btn, { opacity: 0, scale: 0.1 });
+        });
+      }
     } else {
       console.log('Setting up regular fade element:', el);
       gsap.set(el, { opacity: 0, y: 40 }); // More pronounced initial offset
@@ -234,7 +238,19 @@ function checkElementsInView() {
       isMobile &&
       (el.classList.contains('footer-title') || el.closest('.footer-contact'))
     ) {
-      threshold = windowHeight * 0.75; // Earlier trigger on mobile
+      threshold = windowHeight * 0.7; // Earlier trigger on mobile phones
+    }
+    
+    // Special handling for footer-contact on mobile - trigger immediately if footer is visible
+    if (isMobile && el.classList.contains('footer-contact')) {
+      const footer = el.closest('.footer');
+      if (footer) {
+        const footerRect = footer.getBoundingClientRect();
+        // If any part of footer is visible, trigger the animation
+        if (footerRect.top < windowHeight) {
+          threshold = windowHeight + 100; // Always trigger
+        }
+      }
     }
 
     // Check if element is in view
@@ -277,57 +293,41 @@ function checkElementsInView() {
       if (el.classList.contains('footer-contact')) {
         console.log('🔵 Animating footer-contact container and buttons with pop-in effect');
 
+        // Skip button animations on mobile - they're already visible via CSS
+        if (isMobile) {
+          // Just mark as animated
+          console.log('Skipping footer button animations on mobile - using CSS visibility');
+          gsap.set(el, { opacity: 1 });
+          return;
+        }
+
         // Kill any existing animations
         gsap.killTweensOf(el);
 
         // Find all buttons within this container
         const buttons = el.querySelectorAll('.btn, a');
 
-        // On mobile, animate buttons with fade and scale effect
-        if (isMobile) {
-          // Set initial states for all buttons
-          buttons.forEach(btn => {
-            gsap.set(btn, { opacity: 0, scale: 0.1 });
-          });
+        // Desktop animation
+        // Set initial states for all buttons
+        buttons.forEach(btn => {
+          gsap.set(btn, { opacity: 0, scale: 0.1 });
+        });
 
-          // Convert to array and sort by vertical position (top to bottom for mobile stack)
-          const sortedButtons = Array.from(buttons).sort((a, b) => {
-            const rectA = a.getBoundingClientRect();
-            const rectB = b.getBoundingClientRect();
-            return rectA.top - rectB.top;
-          });
+        // Convert to array and sort by horizontal position (left to right)
+        const sortedButtons = Array.from(buttons).sort((a, b) => {
+          const rectA = a.getBoundingClientRect();
+          const rectB = b.getBoundingClientRect();
+          return rectA.left - rectB.left;
+        });
 
-          // Animate buttons with fade and scale
-          gsap.to(sortedButtons, {
-            opacity: 1,
-            scale: 1,
-            duration: 0.2,
-            ease: 'power2.out',
-            stagger: 0.08
-          });
-        } else {
-          // Desktop animation
-          // Set initial states for all buttons
-          buttons.forEach(btn => {
-            gsap.set(btn, { opacity: 0, scale: 0.1 });
-          });
-
-          // Convert to array and sort by horizontal position (left to right)
-          const sortedButtons = Array.from(buttons).sort((a, b) => {
-            const rectA = a.getBoundingClientRect();
-            const rectB = b.getBoundingClientRect();
-            return rectA.left - rectB.left;
-          });
-
-          // Animate buttons with stagger from left to right
-          gsap.to(sortedButtons, {
-            opacity: 1,
-            scale: 1,
-            duration: 0.25, // Slower desktop animation
-            ease: 'power2.out',
-            stagger: 0.08 // Slightly longer stagger
-          });
-        }
+        // Animate buttons with stagger from left to right
+        gsap.to(sortedButtons, {
+          opacity: 1,
+          scale: 1,
+          duration: 0.25, // Slower desktop animation
+          ease: 'power2.out',
+          stagger: 0.08 // Slightly longer stagger
+        });
 
         // Make the container visible
         gsap.set(el, { opacity: 1 });
@@ -669,6 +669,8 @@ function forceCheckVisible() {
     if (locoScroll) locoScroll.update();
     console.log('🔄 Forced check #1');
   }, 100);
+  
+  // No need to force footer buttons on mobile - handled by CSS
 
   // Secondary check after layout settles
   setTimeout(() => {
