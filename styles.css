@@ -315,7 +315,33 @@ p {
 
 /* Navigation */
 
+/* Remove individual dots from nav items */
+.nav-item::after {
+  display: none;
+}
+
+/* Create a single magnetic dot */
+.nav-magnetic-dot {
+  position: absolute;
+  bottom: 0.3rem;
+  left: 0;
+  width: 10px;
+  height: 10px;
+  background: url('./public/purple-menu-dot.svg') no-repeat center;
+  background-size: contain;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 10;
+  transform-origin: center center;
+}
+
+.nav-magnetic-dot.show {
+  opacity: 1;
+}
+
 .nav-list {
+  position: relative;
   list-style: none;
   display: flex;
   gap: 2rem;
@@ -331,36 +357,6 @@ p {
 .nav-item {
   position: relative;
   padding-bottom: 0.8rem;
-}
-
-.nav-item::after {
-  content: "";
-  position: absolute;
-  bottom: 0.1rem;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 10px;
-  height: 10px;
-  background: url('./public/purple-menu-dot.svg') no-repeat center;
-  background-size: contain;
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-
-/* Show dot on hover for any item */
-.nav-item:hover::after {
-  opacity: 1;
-}
-
-/* Show dot on Home only when no items are being hovered AND Home is active */
-.nav-list:not(:hover) .nav-item.active::after {
-  opacity: 1;
-}
-
-/* Hide Home dot when any other item is being hovered */
-.nav-list:hover .nav-item.active:not(:hover)::after {
-  opacity: 0;
 }
 
 .nav-toggle {

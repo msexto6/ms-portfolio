@@ -38,6 +38,7 @@ function init() {
   initGSAPAnimations();
   setupInitialStates();
   initLocomotiveScroll();
+  initMagneticNavDot();
   initMagneticButtons();
   addEventListeners();
 
@@ -554,6 +555,68 @@ function updateFloatingButton(scrollY) {
       }
     });
   }
+}
+
+// ================= MAGNETIC NAV DOT =================
+function initMagneticNavDot() {
+  const magneticDot = document.querySelector('.nav-magnetic-dot');
+  const navList = document.querySelector('.nav-list');
+  const navItems = document.querySelectorAll('.nav-item');
+  const activeItem = document.querySelector('.nav-item.active');
+  
+  if (!magneticDot || !navList || navItems.length === 0) return;
+  
+  // Position dot on active item initially
+  if (activeItem) {
+    positionDotOnItem(magneticDot, activeItem);
+    magneticDot.classList.add('show');
+  }
+  
+  // Add hover listeners to nav items
+  navItems.forEach(item => {
+    item.addEventListener('mouseenter', () => {
+      magneticDot.classList.add('show');
+      gsap.to(magneticDot, {
+        x: getItemCenterX(item),
+        duration: 0.28,
+        ease: 'back.out(2)'
+      });
+    });
+  });
+  
+  // Return to active item when leaving nav
+  navList.addEventListener('mouseleave', () => {
+    if (activeItem) {
+      gsap.to(magneticDot, {
+        x: getItemCenterX(activeItem),
+        duration: 0.4,
+        ease: 'back.out(1.5)'
+      });
+    } else {
+      magneticDot.classList.remove('show');
+    }
+  });
+  
+  console.log('🟣 Magnetic nav dot initialized');
+}
+
+function positionDotOnItem(dot, item) {
+  const x = getItemCenterX(item);
+  gsap.set(dot, { x: x });
+}
+
+function getItemCenterX(item) {
+  const navList = document.querySelector('.nav-list');
+  const navListRect = navList.getBoundingClientRect();
+  const itemRect = item.getBoundingClientRect();
+  
+  // Calculate the position relative to the nav-list container
+  const navListPaddingLeft = parseInt(window.getComputedStyle(navList).paddingLeft) || 0;
+  const relativeX = itemRect.left - navListRect.left;
+  const centerX = relativeX + (itemRect.width / 2) - 5; // -5 to center the 10px dot
+  
+  console.log(`Item: ${item.textContent}, RelativeX: ${relativeX}, CenterX: ${centerX}`);
+  return centerX;
 }
 
 // ================= MAGNETIC BUTTON EFFECTS =================
