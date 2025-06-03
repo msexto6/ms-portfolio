@@ -152,6 +152,35 @@ function setupInitialStates() {
 
 // ================= LOCOMOTIVE SCROLL SETUP =================
 function initLocomotiveScroll() {
+  // Check if mobile device - if so, skip Locomotive Scroll
+  if (isMobileDevice()) {
+    console.log('📱 Mobile device detected - using native scroll');
+    
+    // Use native scroll for mobile - just add scroll listener for animations
+    window.addEventListener('scroll', () => {
+      const scrollY = window.pageYOffset || document.documentElement.scrollTop;
+      
+      if (!window.mobileScrollThrottle) {
+        window.mobileScrollThrottle = true;
+        setTimeout(() => {
+          checkElementsInView();
+          updateFloatingButton(scrollY);
+          window.mobileScrollThrottle = false;
+        }, 16); // 60fps for smoother animation
+      }
+    });
+    
+    // Still call the animation check for initial load
+    setTimeout(() => {
+      checkElementsInView();
+    }, 100);
+    
+    return;
+  }
+  
+  // Desktop - use Locomotive Scroll
+  console.log('💻 Desktop device detected - using Locomotive Scroll');
+  
   locoScroll = new LocomotiveScroll({
     el: document.querySelector('[data-scroll-container]'),
     smooth: true,
@@ -172,21 +201,10 @@ function initLocomotiveScroll() {
   locoScroll.on('scroll', (args) => {
     const scrollY = args.scroll.y;
 
-    if (isMobileDevice()) {
-      if (!window.mobileScrollThrottle) {
-        window.mobileScrollThrottle = true;
-        setTimeout(() => {
-          checkElementsInView();
-          updateFloatingButton(scrollY);
-          window.mobileScrollThrottle = false;
-        }, 16); // 60fps for smoother animation
-      }
-    } else {
-      checkElementsInView();
-      updateFloatingButton(scrollY);
-    }
+    checkElementsInView();
+    updateFloatingButton(scrollY);
 
-    if (args.scroll.y < 50 && !isMobileDevice()) {
+    if (args.scroll.y < 50) {
       document
         .querySelectorAll('.hero .fade-in')
         .forEach((el) => animatedElements.delete(el));
