@@ -720,15 +720,71 @@ function addEventListeners() {
   // Fix for scroll freeze when returning from external apps (like email)
   const handleVisibilityChange = () => {
     if (!document.hidden && locoScroll) {
-      // Page became visible again - refresh scroll
+      // Page became visible again - completely reinitialize scroll
       setTimeout(() => {
-        locoScroll.update();
-        // Force a scroll event to refresh everything
-        const currentScroll = locoScroll.scroll.instance.scroll.y;
+        console.log('🔄 Reinitializing Locomotive Scroll after visibility change');
+        
+        // Destroy existing instance
+        locoScroll.destroy();
+        
+        // Recreate scroll instance
+        locoScroll = new LocomotiveScroll({
+          el: document.querySelector('[data-scroll-container]'),
+          smooth: true,
+          multiplier: 0.8,
+          class: 'is-revealed',
+          smartphone: {
+            smooth: true,
+            multiplier: 2.0,
+          },
+          tablet: {
+            smooth: true,
+            multiplier: 2.0,
+          },
+          lerp: 0.1,
+          reloadOnContextChange: true,
+        });
+        
+        // Re-setup scroll events
+        locoScroll.on('scroll', (args) => {
+          const scrollY = args.scroll.y;
+          if (isMobileDevice()) {
+            if (!window.mobileScrollThrottle) {
+              window.mobileScrollThrottle = true;
+              setTimeout(() => {
+                checkElementsInView();
+                updateFloatingButton(scrollY);
+                window.mobileScrollThrottle = false;
+              }, 16);
+            }
+          } else {
+            checkElementsInView();
+            updateFloatingButton(scrollY);
+          }
+        });
+        
+        // Re-setup ScrollTrigger if available
+        if (typeof ScrollTrigger !== 'undefined') {
+          locoScroll.on('scroll', ScrollTrigger.update);
+          ScrollTrigger.scrollerProxy('[data-scroll-container]', {
+            scrollTop(value) {
+              return arguments.length ? locoScroll.scrollTo(value, 0, 0) : locoScroll.scroll.instance.scroll.y;
+            },
+            getBoundingClientRect() {
+              return { top: 0, left: 0, width: window.innerWidth, height: window.innerHeight };
+            },
+            pinType: document.querySelector('[data-scroll-container]').style.transform ? 'transform' : 'fixed'
+          });
+          ScrollTrigger.refresh();
+        }
+        
+        // Refresh everything
         checkElementsInView();
+        const currentScroll = locoScroll.scroll.instance.scroll.y;
         updateFloatingButton(currentScroll);
-        console.log('🔄 Locomotive Scroll refreshed on page visibility change');
-      }, 100);
+        
+        console.log('✅ Locomotive Scroll completely reinitialized');
+      }, 150);
     }
   };
   document.addEventListener('visibilitychange', handleVisibilityChange);
@@ -744,6 +800,33 @@ function addEventListeners() {
     }
   };
   window.addEventListener('focus', handleFocus);
+
+  // Chrome-specific fix for page show event
+  const handlePageShow = (e) => {
+    if (locoScroll) {
+      setTimeout(() => {
+        locoScroll.update();
+        locoScroll.start();
+        console.log('🔄 Locomotive Scroll restarted on page show');
+      }, 300);
+    }
+  };
+  window.addEventListener('pageshow', handlePageShow);
+
+  // Additional Chrome fix - listen for document becoming visible
+  let lastActiveTime = Date.now();
+  const handleDocumentClick = () => {
+    const now = Date.now();
+    // If it's been more than 2 seconds since last activity, refresh scroll
+    if (now - lastActiveTime > 2000 && locoScroll) {
+      locoScroll.update();
+      locoScroll.start();
+      console.log('🔄 Locomotive Scroll refreshed after inactivity');
+    }
+    lastActiveTime = now;
+  };
+  document.addEventListener('click', handleDocumentClick);
+  document.addEventListener('touchstart', handleDocumentClick);
 
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && isMenuOpen) closeSlideMenu();
