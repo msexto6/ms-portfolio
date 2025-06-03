@@ -521,11 +521,12 @@ p {
 
 /* Mobile-specific button visibility fix */
 @media (max-width: 768px) {
+
   /* Ensure footer buttons are always visible on mobile */
   .footer-contact {
     opacity: 1 !important;
   }
-  
+
   .footer-contact .btn,
   .footer-contact a {
     /* Remove the scale transform that's hiding buttons */
@@ -559,7 +560,7 @@ p {
   .hero-logo-mobile {
     width: 90vw;
     left: 4vw;
-    padding-bottom: 5rem;
+    padding-bottom: 3rem;
   }
 
   .nav-toggle {
