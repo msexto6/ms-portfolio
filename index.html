@@ -5,6 +5,15 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Mark Sexton | Portfolio</title>
+  
+  <!-- Preload video thumbnails for faster display -->
+  <link rel="preload" href="./public/wave-loop-5.30.jpg" as="image">
+  <link rel="preload" href="./public/wave-loop-mobile-5.30.jpg" as="image">
+  
+  <!-- Preload critical videos -->
+  <link rel="preload" href="./public/wave-loop-5.30.mp4" as="video" type="video/mp4" media="(min-width: 769px)">
+  <link rel="preload" href="./public/wave-loop-mobile-5.30.mp4" as="video" type="video/mp4" media="(max-width: 768px)">
+  
   <link rel="stylesheet" href="styles.css">
   <script src="https://cdn.jsdelivr.net/npm/locomotive-scroll@4.1.4/dist/locomotive-scroll.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
@@ -14,7 +23,7 @@
 <body>
   <div data-scroll-container>
     <section class="hero">
-      <video class="background-video" autoplay muted loop playsinline webkit-playsinline preload="metadata" poster="./public/wave-loop-5.30.jpg">
+      <video class="background-video" autoplay muted loop playsinline webkit-playsinline preload="metadata">
         <!-- Mobile sources (for screens 768px and below) -->
         <source src="./public/wave-loop-mobile-5.30.mp4" type="video/mp4" media="(max-width: 768px)" />
         <source src="./public/wave-loop-mobile-5.30.webm" type="video/webm" media="(max-width: 768px)" />
@@ -26,6 +35,13 @@
         <source src="./public/wave-loop-5.30.webm" type="video/webm" />
         Your browser doesn't support HTML5 video.
       </video>
+      
+      <!-- Responsive poster images for faster loading -->
+      <picture class="video-poster">
+        <source media="(max-width: 768px)" srcset="./public/wave-loop-mobile-5.30.jpg">
+        <source media="(min-width: 769px)" srcset="./public/wave-loop-5.30.jpg">
+        <img src="./public/wave-loop-5.30.jpg" alt="Video background" style="position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; object-fit: cover; z-index: -2;">
+      </picture>
       <header class="site-header">
         <nav class="site-nav">
           <ul class="nav-list">
