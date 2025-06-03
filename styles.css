@@ -109,7 +109,7 @@ body {
   height: 100%;
   max-height: 100%;
   width: 100%;
-  background-color: #000000;
+  background-color: #5000ff;
 }
 
 /* Locomotive Scroll Setup */
@@ -387,7 +387,7 @@ p {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 1rem;
+  gap: 2rem;
   position: relative;
   z-index: 1;
   margin-bottom: 0;
@@ -627,6 +627,10 @@ p {
   }
 
   .footer-contact .btn {
+    opacity: 1 !important;
+    /* Always visible on mobile */
+    transform: scale(1) !important;
+    /* Full size on mobile */
     display: inline-flex !important;
     /* Ensure they display */
   }
