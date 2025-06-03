@@ -166,6 +166,14 @@ function initLocomotiveScroll() {
   if (isMobileDevice()) {
     console.log('📱 Mobile device detected - using native scroll');
     
+    // Force native scrolling on mobile
+    document.body.style.overflow = 'auto';
+    document.documentElement.style.overflow = 'auto';
+    
+    // Remove any Locomotive classes that might interfere
+    document.documentElement.classList.remove('has-scroll-smooth', 'has-scroll-dragging');
+    document.body.classList.remove('has-scroll-smooth');
+    
     // Use native scroll for mobile - just add scroll listener for animations
     window.addEventListener('scroll', () => {
       const scrollY = window.pageYOffset || document.documentElement.scrollTop;
@@ -180,10 +188,12 @@ function initLocomotiveScroll() {
       }
     });
     
-    // Still call the animation check for initial load
+    // Test scroll functionality after a delay
     setTimeout(() => {
+      const testScroll = window.pageYOffset || document.documentElement.scrollTop;
+      console.log('Mobile scroll test - can scroll:', testScroll >= 0);
       checkElementsInView();
-    }, 100);
+    }, 500);
     
     return;
   }
@@ -730,13 +740,15 @@ function isMobileDevice() {
   const isMobileUA = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(userAgent);
   const isMobileWidth = window.innerWidth <= 768;
   const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+  const isTablet = /ipad|tablet/i.test(userAgent) || (isTouchDevice && window.innerWidth <= 1024);
   
-  const isMobile = isMobileUA || (isMobileWidth && isTouchDevice);
+  const isMobile = isMobileUA || isMobileWidth || isTablet;
   
   console.log('Device detection:', {
     userAgent: isMobileUA,
     width: isMobileWidth,
     touch: isTouchDevice,
+    tablet: isTablet,
     final: isMobile
   });
   
