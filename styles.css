@@ -519,6 +519,22 @@ p {
 
 
 
+/* Mobile-specific button visibility fix */
+@media (max-width: 768px) {
+  /* Ensure footer buttons are always visible on mobile */
+  .footer-contact {
+    opacity: 1 !important;
+  }
+  
+  .footer-contact .btn,
+  .footer-contact a {
+    /* Remove the scale transform that's hiding buttons */
+    transform: none !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+  }
+}
+
 /* Responsive (Mobile) */
 @media (max-width: 768px) {
   .nav-list {
