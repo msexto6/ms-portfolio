@@ -114,14 +114,23 @@ function setupInitialStates() {
       // Set the container to be visible
       gsap.set(el, { opacity: 1 });
       
-      // Only hide buttons for animation on desktop
-      if (!isMobileDevice()) {
+      // Only hide buttons for animation on desktop and wide viewports
+      if (!isMobileDevice() && window.innerWidth > 768) {
         // Set all buttons inside to scale 0.1
         const buttons = el.querySelectorAll('.btn, a');
         buttons.forEach(btn => {
           console.log('Setting up footer button:', btn);
           gsap.set(btn, { opacity: 0, scale: 0.1 });
         });
+      }
+    } else if (el.classList.contains('footer-title')) {
+      // Special handling for footer title - don't hide on narrow viewports
+      if (isMobileDevice() || window.innerWidth <= 768) {
+        console.log('Setting up footer title for mobile/narrow viewport - keeping visible:', el);
+        gsap.set(el, { opacity: 1, y: 0 });
+      } else {
+        console.log('Setting up footer title for desktop - hiding for animation:', el);
+        gsap.set(el, { opacity: 0, y: 40 });
       }
     } else {
       console.log('Setting up regular fade element:', el);
@@ -220,9 +229,9 @@ function checkElementsInView() {
   const isMobile = isMobileDevice();
 
   document.querySelectorAll('.fade-in').forEach((el) => {
-    // Don't reset footer elements on mobile once they've been animated
+    // Don't reset footer elements on mobile/narrow viewports once they've been animated
     if (
-      isMobile &&
+      (isMobile || window.innerWidth <= 768) &&
       mobileFooterAnimated &&
       (el.classList.contains('footer-title') || el.closest('.footer'))
     ) {
@@ -234,15 +243,25 @@ function checkElementsInView() {
 
     // Determine threshold based on element type and device
     let threshold = windowHeight * 0.85;
+    
+    // Use earlier trigger for footer elements on both mobile AND narrow viewports
     if (
-      isMobile &&
+      (isMobile || window.innerWidth <= 768) &&
       (el.classList.contains('footer-title') || el.closest('.footer-contact'))
     ) {
-      threshold = windowHeight * 0.7; // Earlier trigger on mobile phones
+      threshold = windowHeight * 0.7; // Earlier trigger on mobile phones and narrow viewports
     }
     
-    // Special handling for footer-contact on mobile - trigger immediately if footer is visible
-    if (isMobile && el.classList.contains('footer-contact')) {
+    // Even more aggressive trigger for footer-title specifically on narrow viewports
+    if (
+      el.classList.contains('footer-title') && 
+      window.innerWidth <= 768
+    ) {
+      threshold = windowHeight * 0.6; // Very early trigger for headline on narrow viewports
+    }
+    
+    // Special handling for footer-contact on mobile AND narrow viewports - trigger immediately if footer is visible
+    if ((isMobile || window.innerWidth <= 768) && el.classList.contains('footer-contact')) {
       const footer = el.closest('.footer');
       if (footer) {
         const footerRect = footer.getBoundingClientRect();
@@ -282,21 +301,21 @@ function checkElementsInView() {
       animatedElements.add(el);
 
       if (
-        isMobile &&
+        (isMobile || window.innerWidth <= 768) &&
         (el.classList.contains('footer-title') || el.closest('.footer'))
       ) {
         mobileFooterAnimated = true;
-        console.log('📱 Mobile footer animation locked in');
+        console.log('📱 Mobile/narrow viewport footer animation locked in');
       }
 
       // Check if this is the footer-contact div containing buttons - use special handling
       if (el.classList.contains('footer-contact')) {
         console.log('🔵 Animating footer-contact container and buttons with pop-in effect');
 
-        // Skip button animations on mobile - they're already visible via CSS
-        if (isMobile) {
+        // Skip button animations on mobile/narrow viewports - they're already visible via CSS
+        if (isMobile || window.innerWidth <= 768) {
           // Just mark as animated
-          console.log('Skipping footer button animations on mobile - using CSS visibility');
+          console.log('Skipping footer button animations on mobile/narrow viewport - using CSS visibility');
           gsap.set(el, { opacity: 1 });
           return;
         }
