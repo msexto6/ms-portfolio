@@ -25,20 +25,10 @@ window.addEventListener('beforeunload', cleanup);
 
 // ================= INIT FUNCTION =================
 function init() {
-  console.log('▶️ init() - Screen size:', window.innerWidth + 'x' + window.innerHeight);
+  console.log('▶️ init()');
 
   // Remove no-js class if JavaScript is enabled
   document.documentElement.classList.remove('no-js');
-  
-  // Force clean state
-  if (locoScroll) {
-    try {
-      locoScroll.destroy();
-      locoScroll = null;
-    } catch (e) {
-      console.log('Init cleanup:', e);
-    }
-  }
 
   disablePinchZoom();
   setupMobileVideo();
@@ -162,45 +152,6 @@ function setupInitialStates() {
 
 // ================= LOCOMOTIVE SCROLL SETUP =================
 function initLocomotiveScroll() {
-  // Check if mobile device - if so, skip Locomotive Scroll
-  if (isMobileDevice()) {
-    console.log('📱 Mobile device detected - using native scroll');
-    
-    // Force native scrolling on mobile
-    document.body.style.overflow = 'auto';
-    document.documentElement.style.overflow = 'auto';
-    
-    // Remove any Locomotive classes that might interfere
-    document.documentElement.classList.remove('has-scroll-smooth', 'has-scroll-dragging');
-    document.body.classList.remove('has-scroll-smooth');
-    
-    // Use native scroll for mobile - just add scroll listener for animations
-    window.addEventListener('scroll', () => {
-      const scrollY = window.pageYOffset || document.documentElement.scrollTop;
-      
-      if (!window.mobileScrollThrottle) {
-        window.mobileScrollThrottle = true;
-        setTimeout(() => {
-          checkElementsInView();
-          updateFloatingButton(scrollY);
-          window.mobileScrollThrottle = false;
-        }, 16); // 60fps for smoother animation
-      }
-    });
-    
-    // Test scroll functionality after a delay
-    setTimeout(() => {
-      const testScroll = window.pageYOffset || document.documentElement.scrollTop;
-      console.log('Mobile scroll test - can scroll:', testScroll >= 0);
-      checkElementsInView();
-    }, 500);
-    
-    return;
-  }
-  
-  // Desktop - use Locomotive Scroll
-  console.log('💻 Desktop device detected - using Locomotive Scroll');
-  
   locoScroll = new LocomotiveScroll({
     el: document.querySelector('[data-scroll-container]'),
     smooth: true,
@@ -208,11 +159,11 @@ function initLocomotiveScroll() {
     class: 'is-revealed',
     smartphone: {
       smooth: true,
-      multiplier: 2.0, // Faster scroll on mobile
+      multiplier: 2.0,
     },
     tablet: {
       smooth: true,
-      multiplier: 2.0, // Also faster on tablet (in case iPhone is detected as tablet)
+      multiplier: 2.0,
     },
     lerp: 0.1,
     reloadOnContextChange: true,
@@ -221,10 +172,21 @@ function initLocomotiveScroll() {
   locoScroll.on('scroll', (args) => {
     const scrollY = args.scroll.y;
 
-    checkElementsInView();
-    updateFloatingButton(scrollY);
+    if (isMobileDevice()) {
+      if (!window.mobileScrollThrottle) {
+        window.mobileScrollThrottle = true;
+        setTimeout(() => {
+          checkElementsInView();
+          updateFloatingButton(scrollY);
+          window.mobileScrollThrottle = false;
+        }, 16);
+      }
+    } else {
+      checkElementsInView();
+      updateFloatingButton(scrollY);
+    }
 
-    if (args.scroll.y < 50) {
+    if (args.scroll.y < 50 && !isMobileDevice()) {
       document
         .querySelectorAll('.hero .fade-in')
         .forEach((el) => animatedElements.delete(el));
@@ -254,7 +216,14 @@ function checkElementsInView() {
   const isMobile = isMobileDevice();
 
   document.querySelectorAll('.fade-in').forEach((el) => {
-    // Remove the mobile footer check - allow all elements to reset and re-animate
+    // Don't reset footer elements on mobile once they've been animated
+    if (
+      isMobile &&
+      mobileFooterAnimated &&
+      (el.classList.contains('footer-title') || el.closest('.footer'))
+    ) {
+      return;
+    }
 
     // Get element position relative to viewport
     const rect = el.getBoundingClientRect();
@@ -274,25 +243,35 @@ function checkElementsInView() {
 
     console.log(`Element: ${el.className}, Top: ${rect.top}, Bottom: ${rect.bottom}, Threshold: ${threshold}, In View: ${isInView}`);
 
-    // Remove from animated set if element goes out of view (to allow re-animation)
+    // Remove from animated set if element goes out of view (to allow re-animation) - but not on mobile for footer
     if (isOutOfView && animatedElements.has(el)) {
-      animatedElements.delete(el);
-      console.log(`Element ${el.className} removed from animated set - can animate again`);
+      if (!(isMobile && (el.classList.contains('footer-title') || el.closest('.footer')))) {
+        animatedElements.delete(el);
+        console.log(`Element ${el.className} removed from animated set - can animate again`);
 
-      // Reset footer buttons to hidden state when they go out of view
-      if (el.classList.contains('footer-contact')) {
-        const buttons = el.querySelectorAll('.btn, a');
-        buttons.forEach(btn => {
-          gsap.set(btn, { opacity: 0, scale: 0.1 }); // Reset on both mobile and desktop
-        });
-      } else {
-        // Reset regular elements to hidden state
-        gsap.set(el, { opacity: 0, y: 40 });
+        // Reset footer buttons to hidden state when they go out of view
+        if (el.classList.contains('footer-contact')) {
+          const buttons = el.querySelectorAll('.btn, a');
+          buttons.forEach(btn => {
+            gsap.set(btn, { opacity: 0, scale: 0.1 });
+          });
+        } else {
+          // Reset regular elements to hidden state
+          gsap.set(el, { opacity: 0, y: 40 });
+        }
       }
     }
 
     if (isInView && !animatedElements.has(el)) {
       animatedElements.add(el);
+
+      if (
+        isMobile &&
+        (el.classList.contains('footer-title') || el.closest('.footer'))
+      ) {
+        mobileFooterAnimated = true;
+        console.log('📱 Mobile footer animation locked in');
+      }
 
       // Check if this is the footer-contact div containing buttons - use special handling
       if (el.classList.contains('footer-contact')) {
@@ -375,7 +354,14 @@ function checkElementsInView() {
               }
             },
             onComplete: () => {
-              // Remove mobile footer animation lock behavior
+              if (
+                isMobile &&
+                (el.classList.contains('footer-title') || el.closest('.footer'))
+              ) {
+                gsap.set(el, { opacity: 1, y: 0, clearProps: 'transform' });
+                el.style.opacity = '1';
+                el.style.transform = 'none';
+              }
             },
           }
         );
@@ -736,26 +722,9 @@ function forceCheckVisible() {
 
 // ================= HELPER: IS MOBILE =================
 function isMobileDevice() {
-  const userAgent = navigator.userAgent.toLowerCase();
-  
-  // Force mobile for any touch device or known mobile user agents
-  const isMobileUA = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini|mobile/i.test(userAgent);
-  const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0;
-  const isMobileWidth = window.innerWidth <= 1024; // Increased threshold
-  const isSafariMobile = /safari/i.test(userAgent) && isTouchDevice;
-  
-  // If ANY of these are true, treat as mobile
-  const isMobile = isMobileUA || isTouchDevice || isMobileWidth || isSafariMobile;
-  
-  console.log('🔍 FORCE MOBILE CHECK:', {
-    userAgent: userAgent,
-    isMobileUA: isMobileUA,
-    isTouchDevice: isTouchDevice,
-    width: window.innerWidth,
-    isMobileWidth: isMobileWidth,
-    isSafariMobile: isSafariMobile,
-    FINAL_MOBILE: isMobile
-  });
-  
-  return isMobile;
+  return (
+    /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+      navigator.userAgent
+    ) || window.innerWidth <= 768
+  );
 }
