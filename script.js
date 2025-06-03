@@ -30,6 +30,9 @@ function init() {
   // Remove no-js class if JavaScript is enabled
   document.documentElement.classList.remove('no-js');
 
+  // Handle page loader fade-out
+  handlePageLoader();
+
   disablePinchZoom();
   setupMobileVideo();
   initGSAPAnimations();
@@ -51,6 +54,47 @@ function cleanup() {
     ScrollTrigger.killAll();
   }
   console.log('🧹 Cleanup complete');
+}
+
+// ================= PAGE LOADER FADE-OUT =================
+function handlePageLoader() {
+  const pageLoader = document.querySelector('.page-loader');
+  const video = document.querySelector('.background-video');
+  
+  if (!pageLoader) return;
+  
+  // If there's a video, wait for it to be ready
+  if (video) {
+    const fadeOutLoader = () => {
+      setTimeout(() => {
+        pageLoader.classList.add('fade-out');
+        setTimeout(() => {
+          pageLoader.remove();
+        }, 1500); // Remove after transition completes
+      }, 500); // Small delay to ensure smooth transition
+    };
+    
+    // Wait for video to be ready to play
+    if (video.readyState >= 3) {
+      // Video already loaded
+      fadeOutLoader();
+    } else {
+      video.addEventListener('canplaythrough', fadeOutLoader, { once: true });
+      video.addEventListener('loadeddata', fadeOutLoader, { once: true });
+      // Fallback timeout in case video doesn't load
+      setTimeout(fadeOutLoader, 2000);
+    }
+  } else {
+    // No video, fade out immediately
+    setTimeout(() => {
+      pageLoader.classList.add('fade-out');
+      setTimeout(() => {
+        pageLoader.remove();
+      }, 1500);
+    }, 300);
+  }
+  
+  console.log('🎨 Page loader setup complete');
 }
 
 // ================= DISABLE PINCH-ZOOM =================
@@ -672,6 +716,34 @@ function addEventListeners() {
     }, 250);
   };
   window.addEventListener('resize', handleResize);
+
+  // Fix for scroll freeze when returning from external apps (like email)
+  const handleVisibilityChange = () => {
+    if (!document.hidden && locoScroll) {
+      // Page became visible again - refresh scroll
+      setTimeout(() => {
+        locoScroll.update();
+        // Force a scroll event to refresh everything
+        const currentScroll = locoScroll.scroll.instance.scroll.y;
+        checkElementsInView();
+        updateFloatingButton(currentScroll);
+        console.log('🔄 Locomotive Scroll refreshed on page visibility change');
+      }, 100);
+    }
+  };
+  document.addEventListener('visibilitychange', handleVisibilityChange);
+
+  // Additional fix for focus events
+  const handleFocus = () => {
+    if (locoScroll) {
+      setTimeout(() => {
+        locoScroll.update();
+        locoScroll.start();
+        console.log('🔄 Locomotive Scroll restarted on focus');
+      }, 200);
+    }
+  };
+  window.addEventListener('focus', handleFocus);
 
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && isMenuOpen) closeSlideMenu();

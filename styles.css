@@ -201,6 +201,36 @@ p {
   max-width: 100%;
 }
 
+/* Page Loader - White fade-in effect */
+.page-loader {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: #ffffff;
+  z-index: 1000;
+  opacity: 1;
+  pointer-events: none;
+  transition: opacity 1.5s ease-out;
+}
+
+.page-loader.fade-out {
+  opacity: 0;
+}
+
+/* Navigation area needs higher z-index to show above loader */
+.site-header {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 100%;
+  padding: 0.8rem 6vw;
+  display: flex;
+  justify-content: flex-end;
+  z-index: 1001;
+}
+
 /* Hero Section */
 .hero {
   position: relative;
@@ -216,21 +246,12 @@ p {
   position: relative;
   width: 100vw;
   min-height: 60vh;
-  background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%);
+  background: #ffffff;
   display: flex;
   align-items: center;
   justify-content: center;
   margin: 0;
   padding: 0;
-}
-
-/* Navigation text color for dark backgrounds */
-.hero-simple .nav-list a {
-  color: var(--text-light);
-}
-
-.hero-simple .nav-toggle {
-  color: var(--text-light);
 }
 
 .page-title-wrapper {
@@ -242,7 +263,7 @@ p {
 .page-title {
   font-size: 4rem;
   font-weight: 200;
-  color: var(--text-light);
+  color: var(--text);
   margin: 0;
   letter-spacing: -0.02rem;
   line-height: 1.1;
@@ -293,16 +314,6 @@ p {
 }
 
 /* Navigation */
-.site-header {
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 100%;
-  padding: 0.8rem 6vw;
-  display: flex;
-  justify-content: flex-end;
-  z-index: 3;
-}
 
 .nav-list {
   list-style: none;

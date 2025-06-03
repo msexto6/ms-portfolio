@@ -23,6 +23,9 @@
 <body>
   <div data-scroll-container>
     <section class="hero">
+      <!-- White overlay for fade-in effect -->
+      <div class="page-loader"></div>
+      
       <video class="background-video" autoplay muted loop playsinline webkit-playsinline preload="metadata">
         <!-- Mobile sources (for screens 768px and below) -->
         <source src="./public/wave-loop-mobile-5.30.mp4" type="video/mp4" media="(max-width: 768px)" />
@@ -36,12 +39,6 @@
         Your browser doesn't support HTML5 video.
       </video>
       
-      <!-- Responsive poster images for faster loading -->
-      <picture class="video-poster">
-        <source media="(max-width: 768px)" srcset="./public/wave-loop-mobile-5.30.jpg">
-        <source media="(min-width: 769px)" srcset="./public/wave-loop-5.30.jpg">
-        <img src="./public/wave-loop-5.30.jpg" alt="Video background" style="position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; object-fit: cover; z-index: -2;">
-      </picture>
       <header class="site-header">
         <nav class="site-nav">
           <ul class="nav-list">
@@ -81,7 +78,7 @@
         <div class="line-wrapper"><span class="line">Let's work together on your next project</span></div>
       </h2>
       <div class="footer-contact fade-in">
-        <a href="mailto:mark@example.com" class="btn btn-outline magnetic-btn">[email protected]</a>
+        <a href="mailto:mscreativeonline@gmail.com" class="btn btn-outline magnetic-btn">mscreativeonline@gmail.com</a>
         <a href="tel:+17632349542" class="btn btn-outline magnetic-btn">763.234.9542</a>
         <a href="pages/contact.html" class="btn btn-primary magnetic-btn">Contact me</a>
       </div>
