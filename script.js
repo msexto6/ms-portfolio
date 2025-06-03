@@ -737,19 +737,24 @@ function forceCheckVisible() {
 // ================= HELPER: IS MOBILE =================
 function isMobileDevice() {
   const userAgent = navigator.userAgent.toLowerCase();
-  const isMobileUA = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(userAgent);
-  const isMobileWidth = window.innerWidth <= 768;
-  const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-  const isTablet = /ipad|tablet/i.test(userAgent) || (isTouchDevice && window.innerWidth <= 1024);
   
-  const isMobile = isMobileUA || isMobileWidth || isTablet;
+  // Force mobile for any touch device or known mobile user agents
+  const isMobileUA = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini|mobile/i.test(userAgent);
+  const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0;
+  const isMobileWidth = window.innerWidth <= 1024; // Increased threshold
+  const isSafariMobile = /safari/i.test(userAgent) && isTouchDevice;
   
-  console.log('Device detection:', {
-    userAgent: isMobileUA,
-    width: isMobileWidth,
-    touch: isTouchDevice,
-    tablet: isTablet,
-    final: isMobile
+  // If ANY of these are true, treat as mobile
+  const isMobile = isMobileUA || isTouchDevice || isMobileWidth || isSafariMobile;
+  
+  console.log('🔍 FORCE MOBILE CHECK:', {
+    userAgent: userAgent,
+    isMobileUA: isMobileUA,
+    isTouchDevice: isTouchDevice,
+    width: window.innerWidth,
+    isMobileWidth: isMobileWidth,
+    isSafariMobile: isSafariMobile,
+    FINAL_MOBILE: isMobile
   });
   
   return isMobile;
