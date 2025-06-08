@@ -5,22 +5,35 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Mark Sexton | Portfolio</title>
-  
+
+
+  <!-- Google Tag Manager -->
+  <script>(function (w, d, s, l, i) {
+      w[l] = w[l] || []; w[l].push({
+        'gtm.start':
+          new Date().getTime(), event: 'gtm.js'
+      }); var f = d.getElementsByTagName(s)[0],
+        j = d.createElement(s), dl = l != 'dataLayer' ? '&l=' + l : ''; j.async = true; j.src =
+          'https://www.googletagmanager.com/gtm.js?id=' + i + dl; f.parentNode.insertBefore(j, f);
+    })(window, document, 'script', 'dataLayer', 'GTM-PD5QNKVW');</script>
+  <!-- End Google Tag Manager -->
+
   <!-- Favicon -->
   <link rel="apple-touch-icon" sizes="180x180" href="./public/icons/favicon_io/apple-touch-icon.png">
   <link rel="icon" type="image/png" sizes="32x32" href="./public/icons/favicon_io/favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="./public/icons/favicon_io/favicon-16x16.png">
   <link rel="manifest" href="./public/icons/favicon_io/site.webmanifest">
   <link rel="shortcut icon" href="./public/icons/favicon_io/favicon.ico">
-  
+
   <!-- Preload video thumbnails for faster display -->
   <link rel="preload" href="./public/hero/wave-loop-5.30.jpg" as="image">
   <link rel="preload" href="./public/hero/wave-loop-mobile-5.30.jpg" as="image">
-  
+
   <!-- Preload critical videos -->
   <link rel="preload" href="./public/hero/wave-loop-5.30.mp4" as="video" type="video/mp4" media="(min-width: 769px)">
-  <link rel="preload" href="./public/hero/wave-loop-mobile-5.30.mp4" as="video" type="video/mp4" media="(max-width: 768px)">
-  
+  <link rel="preload" href="./public/hero/wave-loop-mobile-5.30.mp4" as="video" type="video/mp4"
+    media="(max-width: 768px)">
+
   <link rel="stylesheet" href="styles.css">
   <script src="https://cdn.jsdelivr.net/npm/locomotive-scroll@4.1.4/dist/locomotive-scroll.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
@@ -28,11 +41,20 @@
 </head>
 
 <body>
+
+
+  <!-- Google Tag Manager (noscript) -->
+  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-PD5QNKVW" height="0" width="0"
+      style="display:none;visibility:hidden"></iframe></noscript>
+  <!-- End Google Tag Manager (noscript) -->
+
+
+
   <div data-scroll-container>
     <section class="hero">
       <!-- White overlay for fade-in effect -->
       <div class="page-loader"></div>
-      
+
       <video class="background-video" autoplay muted loop playsinline webkit-playsinline preload="metadata">
         <!-- Mobile sources (for screens 768px and below) -->
         <source src="./public/hero/wave-loop-mobile-5.30.mp4" type="video/mp4" media="(max-width: 768px)" />
@@ -45,7 +67,7 @@
         <source src="./public/hero/wave-loop-5.30.webm" type="video/webm" />
         Your browser doesn't support HTML5 video.
       </video>
-      
+
       <header class="site-header">
         <nav class="site-nav">
           <ul class="nav-list">
@@ -60,7 +82,8 @@
       </header>
       <img class="corner-fade" src="./public/icons/corner-fade.png" alt="Corner fade effect">
       <img class="hero-logo hero-logo-desktop" src="./public/icons/marksexton-1.svg" alt="Mark Sexton logo">
-      <img class="hero-logo hero-logo-mobile" src="./public/icons/marksextonstacked-1.svg" alt="Mark Sexton mobile logo">
+      <img class="hero-logo hero-logo-mobile" src="./public/icons/marksextonstacked-1.svg"
+        alt="Mark Sexton mobile logo">
       <div class="scroll-indicator">
         <img class="down-arrow" src="./public/icons/down-arrow.svg" alt="Scroll down indicator">
       </div>
