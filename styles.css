@@ -51,10 +51,10 @@ html.no-js .floating-menu-btn {
   font-family: 'Helvetica Neue';
   font-weight: 200;
   font-style: normal;
-  src: url('./public/helveticaneuethin-webfont.woff2') format('woff2'),
-    url('./public/helveticaneuethin-webfont.woff') format('woff'),
-    url('./public/HelveticaNeueThin.ttf') format('truetype'),
-    url('./public/HelveticaNeueThin.otf') format('opentype');
+  src: url('./public/fonts/helveticaneuethin-webfont.woff2') format('woff2'),
+    url('./public/fonts/helveticaneuethin-webfont.woff') format('woff'),
+    url('./public/fonts/HelveticaNeueThin.ttf') format('truetype'),
+    url('./public/fonts/HelveticaNeueThin.otf') format('opentype');
   font-display: swap;
 }
 
@@ -62,10 +62,10 @@ html.no-js .floating-menu-btn {
   font-family: 'Helvetica Neue';
   font-weight: 300;
   font-style: normal;
-  src: url('./public/helveticaneuelight-webfont.woff2') format('woff2'),
-    url('./public/helveticaneuelight-webfont.woff') format('woff'),
-    url('./public/HelveticaNeueLight.ttf') format('truetype'),
-    url('./public/HelveticaNeueLight.otf') format('opentype');
+  src: url('./public/fonts/helveticaneuelight-webfont.woff2') format('woff2'),
+    url('./public/fonts/helveticaneuelight-webfont.woff') format('woff'),
+    url('./public/fonts/HelveticaNeueLight.ttf') format('truetype'),
+    url('./public/fonts/HelveticaNeueLight.otf') format('opentype');
   font-display: swap;
 }
 
@@ -73,10 +73,10 @@ html.no-js .floating-menu-btn {
   font-family: 'Helvetica Neue';
   font-weight: 400;
   font-style: normal;
-  src: url('./public/helveticaneueroman-webfont.woff2') format('woff2'),
-    url('./public/helveticaneueroman-webfont.woff') format('woff'),
-    url('./public/HelveticaNeueRoman.ttf') format('truetype'),
-    url('./public/HelveticaNeueRoman.otf') format('opentype');
+  src: url('./public/fonts/helveticaneueroman-webfont.woff2') format('woff2'),
+    url('./public/fonts/helveticaneueroman-webfont.woff') format('woff'),
+    url('./public/fonts/HelveticaNeueRoman.ttf') format('truetype'),
+    url('./public/fonts/HelveticaNeueRoman.otf') format('opentype');
   font-display: swap;
 }
 
@@ -180,6 +180,7 @@ h1 .line-wrapper,
   vertical-align: top;
   line-height: 1.1;
   z-index: 3;
+  margin-bottom: 0;
 }
 
 h1 .line,
@@ -188,6 +189,8 @@ h1 .line,
   transform: translateY(120%);
   opacity: 0;
   transition: transform 1.5s cubic-bezier(0.19, 1, 0.22, 1), opacity 1.5s ease-out;
+  line-height: 1.1;
+  margin: 0;
 }
 
 h1.animate-in .line,
@@ -245,7 +248,7 @@ p {
 .hero-simple {
   position: relative;
   width: 100vw;
-  min-height: 60vh;
+  min-height: 48vh;
   background: #ffffff;
   display: flex;
   align-items: center;
@@ -261,7 +264,7 @@ p {
 }
 
 .page-title {
-  font-size: 4rem;
+  font-size: 5.76rem; /* 20% larger than 4.8rem (4.8 * 1.2) */
   font-weight: 200;
   color: var(--text);
   margin: 0;
@@ -313,6 +316,32 @@ p {
   display: none;
 }
 
+/* Scroll Indicator */
+.scroll-indicator {
+  position: absolute;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 3;
+  pointer-events: none;
+  opacity: 1;
+  transition: opacity 0.6s ease;
+}
+
+.scroll-indicator.fade-out {
+  opacity: 0;
+}
+
+.down-arrow {
+  width: 24px;
+  height: auto;
+  display: block;
+  filter: brightness(0) invert(1); /* Make it white */
+  /* Remove any animations or transitions that could cause bouncing */
+  animation: none;
+  transition: none;
+}
+
 /* Navigation */
 
 /* Remove individual dots from nav items */
@@ -327,7 +356,7 @@ p {
   left: 0;
   width: 10px;
   height: 10px;
-  background: url('./public/purple-menu-dot.svg') no-repeat center;
+  background: url('./public/icons/purple-menu-dot.svg') no-repeat center;
   background-size: contain;
   pointer-events: none;
   opacity: 0;
@@ -352,11 +381,37 @@ p {
   color: var(--text);
   text-decoration: none;
   font-weight: 400;
+  position: relative;
+  display: inline-block;
+  transition: none !important;
+  will-change: transform;
 }
 
+/* CSS-based magnetic effect for nav links */
+.nav-list a:hover {
+  animation: navMagneticHover 0.3s ease-out forwards;
+}
+
+@keyframes navMagneticHover {
+  0% {
+    transform: scale(1);
+  }
+  100% {
+    transform: scale(1.05);
+  }
+}
+
+/* Add magnetic cursor tracking via CSS transforms */
 .nav-item {
   position: relative;
   padding-bottom: 0.8rem;
+}
+
+/* Override any conflicting styles */
+.nav-item a {
+  transform-origin: center center !important;
+  backface-visibility: hidden;
+  perspective: 1000px;
 }
 
 .nav-toggle {
@@ -407,7 +462,7 @@ p {
 .contact-info {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 0.5rem;
   margin-top: 3rem;
 }
 
@@ -492,6 +547,7 @@ p {
   -moz-osx-font-smoothing: grayscale;
   position: relative;
   z-index: 3;
+  margin-bottom: 0.5rem;
 }
 
 .footer-contact {
@@ -556,8 +612,7 @@ p {
   will-change: transform;
 }
 
-/* Add magnetic class to nav items */
-.nav-item a,
+/* Add magnetic class to slide nav items only */
 .slide-nav-item a {
   position: relative;
   transition: all 0.3s ease;
@@ -565,13 +620,11 @@ p {
 }
 
 .magnetic-btn:hover,
-.nav-item a:hover,
 .slide-nav-item a:hover {
   transform: scale(1.05);
 }
 
 .magnetic-btn.is-magnetic,
-.nav-item a.is-magnetic,
 .slide-nav-item a.is-magnetic {
   transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
@@ -642,7 +695,7 @@ p {
   }
 
   .page-title {
-    font-size: 2.5rem;
+    font-size: 3.6rem; /* 20% larger than 3rem (3 * 1.2) */
   }
 
   .placeholder-content {
@@ -744,7 +797,7 @@ p {
     z-index: 1;
     margin-top: 0;
     padding-bottom: 10rem;
-    gap: 2rem;
+    gap: 0.5rem;
   }
 
   .footer-contact {
@@ -776,6 +829,15 @@ p {
 
   .menu-content {
     padding: 6rem 2rem 2rem 2rem;
+  }
+
+  /* Mobile scroll indicator */
+  .scroll-indicator {
+    bottom: 2rem;
+  }
+
+  .down-arrow {
+    width: 20px;
   }
 }
 
@@ -901,6 +963,27 @@ p {
   list-style: none;
   padding: 0;
   margin: 0;
+  position: relative;
+}
+
+/* Slide menu magnetic dot */
+.slide-nav-magnetic-dot {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 10px;
+  height: 10px;
+  background: url('./public/icons/purple-menu-dot.svg') no-repeat center;
+  background-size: contain;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 10;
+  transform-origin: center center;
+}
+
+.slide-nav-magnetic-dot.show {
+  opacity: 1;
 }
 
 .slide-nav-item {
@@ -922,48 +1005,6 @@ p {
 
 .slide-nav-item a:hover {
   opacity: 0.7;
-}
-
-.slide-nav-item::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 10px;
-  height: 10px;
-  background: url('./public/purple-menu-dot.svg') no-repeat center;
-  background-size: contain;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-
-/* Show dot on hover for any item */
-.slide-nav-item:hover::before {
-  opacity: 1;
-}
-
-/* Show dot on Home only when no items are being hovered AND Home is active */
-.slide-nav-list:not(:hover) .slide-nav-item.active::before {
-  opacity: 1;
-}
-
-/* Hide Home dot when any other item is being hovered */
-.slide-nav-list:hover .slide-nav-item.active:not(:hover)::before {
-  opacity: 0;
-}
-
-.slide-nav-item.active::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 10px;
-  height: 10px;
-  background: url('./public/purple-menu-dot.svg') no-repeat center;
-  background-size: contain;
-  opacity: 1;
 }
 
 /* Responsive (Desktop) */
@@ -989,5 +1030,231 @@ p {
 
   .slide-menu {
     width: 45vw;
+  }
+}
+
+/* Work Page Styles */
+.work-page {
+  display: block;
+}
+
+.work-intro {
+  text-align: center;
+  margin-bottom: 4rem;
+}
+
+.work-intro h2 {
+  font-size: 2.5rem;
+  font-weight: 200;
+  line-height: 1.3;
+  color: var(--text);
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+/* Filter Pills */
+.filter-pills-container {
+  margin-bottom: 3rem;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 0 1rem;
+}
+
+.filter-pills {
+  display: flex;
+  gap: 1rem;
+  min-width: max-content;
+  padding: 0.5rem 0;
+}
+
+.filter-pill {
+  background: #f5f5f5;
+  border: 1px solid #e0e0e0;
+  border-radius: 25px;
+  padding: 0.6rem 1.4rem;
+  font-size: 0.85rem;
+  font-weight: 400;
+  color: #666;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+  font-family: var(--font-sans);
+  line-height: 1;
+}
+
+.filter-pill:hover {
+  background: #e8e8e8;
+  border-color: #d0d0d0;
+  color: #333;
+}
+
+.filter-pill.active {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: white;
+}
+
+.filter-pill.active:hover {
+  background: #4000cc;
+  border-color: #4000cc;
+}
+
+/* Project Item Transitions */
+.project-item {
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.project-item.hidden {
+  opacity: 0;
+  transform: scale(0.8);
+  pointer-events: none;
+}
+
+.portfolio-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 3rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.project-thumbnail {
+  width: 100%;
+  aspect-ratio: 1;
+  background: #f5f5f5;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 1.5rem;
+  position: relative;
+  transition: box-shadow 0.3s ease;
+}
+
+.project-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  will-change: transform;
+}
+
+/* Fallback for placeholder divs */
+.project-image:not(img) {
+  background: #d0d0d0;
+}
+
+.project-item:hover .project-thumbnail {
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.project-item:hover .project-image {
+  transform: scale(1.05);
+}
+
+.project-name {
+  font-size: 1.25rem;
+  font-weight: 400;
+  color: var(--text);
+  margin: 0 0 0.5rem 0;
+  line-height: 1.3;
+}
+
+.project-type {
+  font-size: 1rem;
+  font-weight: 300;
+  color: #666;
+  margin: 0;
+  line-height: 1.4;
+}
+
+/* Sort Dropdown */
+.sort-container {
+  margin-bottom: 6rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.sort-label {
+  font-size: 1rem;
+  font-weight: 400;
+  color: var(--text);
+  font-family: var(--font-sans);
+  line-height: 1;
+}
+
+.sort-dropdown {
+  background: #ffffff;
+  border: 1px solid #000000; /* Changed to black */
+  border-radius: 25px;
+  padding: 1.05rem 3rem 1.05rem 2.1rem; /* 50% larger padding */
+  font-size: 1.35rem; /* 50% larger than 0.9rem */
+  font-weight: 400;
+  color: var(--text);
+  cursor: pointer;
+  font-family: 'Helvetica Neue', Arial, sans-serif;
+  line-height: 1;
+  min-width: 300px; /* 50% larger than 200px */
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-image: url('data:image/svg+xml;charset=US-ASCII,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 4 5"><path fill="%23000" d="M2 0L0 2h4zm0 5L0 3h4z"/></svg>'); /* Black arrow */
+  background-repeat: no-repeat;
+  background-position: right 1.5rem center; /* Adjusted for larger size */
+  background-size: 18px; /* 50% larger arrow */
+  transition: all 0.3s ease;
+  position: relative;
+  will-change: transform;
+}
+
+.sort-dropdown:hover {
+  border-color: #333333; /* Darker black on hover */
+  background-color: #f9f9f9;
+  transform: scale(1.02);
+}
+
+.sort-dropdown:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px rgba(80, 0, 255, 0.1);
+  transform: scale(1.02);
+}
+
+/* Mobile Responsive for Work Page */
+@media (max-width: 768px) {
+  .work-intro h2 {
+    font-size: 2rem;
+    padding: 0 1rem;
+  }
+  
+  .sort-container {
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 4rem;
+  }
+  
+  .sort-dropdown {
+    min-width: 375px; /* 50% larger than 250px */
+    font-size: 1.275rem; /* 50% larger than 0.85rem */
+  }
+  
+  .portfolio-grid {
+    grid-template-columns: 1fr;
+    gap: 2.5rem;
+    padding: 0 1rem;
+  }
+  
+  .project-thumbnail {
+    margin-bottom: 1rem;
+  }
+  
+  .project-name {
+    font-size: 1.1rem;
+  }
+  
+  .project-type {
+    font-size: 0.9rem;
   }
 }

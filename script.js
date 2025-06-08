@@ -39,7 +39,10 @@ function init() {
   setupInitialStates();
   initLocomotiveScroll();
   initMagneticNavDot();
+  initSlideMagneticNavDot();
+  addNavMagneticEffects();
   initMagneticButtons();
+  initPortfolioFilter();
   addEventListeners();
 
   // Force an initial "check visibility" for fade-ins (desktop + mobile)
@@ -177,6 +180,16 @@ function setupInitialStates() {
         console.log('Setting up footer title for desktop - hiding for animation:', el);
         gsap.set(el, { opacity: 0, y: 40 });
       }
+    } else if (el.classList.contains('sort-container')) {
+      // Special handling for sort container - hide dropdown for pop-in effect
+      console.log('Setting up sort container for pop-in animation:', el);
+      gsap.set(el, { opacity: 1 });
+      
+      const dropdown = el.querySelector('.sort-dropdown');
+      if (dropdown) {
+        gsap.set(dropdown, { opacity: 0, scale: 0.1 });
+        console.log('Dropdown set to scale 0.1 for pop-in effect');
+      }
     } else {
       console.log('Setting up regular fade element:', el);
       gsap.set(el, { opacity: 0, y: 40 }); // More pronounced initial offset
@@ -196,6 +209,20 @@ function setupInitialStates() {
       visibility: 'hidden',
       scale: 0.1,
     });
+  }
+
+  // Set scroll indicator to be immediately visible and stable
+  const scrollIndicator = document.querySelector('.scroll-indicator');
+  if (scrollIndicator) {
+    gsap.set(scrollIndicator, {
+      opacity: 1,
+      y: 0,
+      scale: 1,
+      clearProps: 'transform'
+    });
+    // Ensure it's never processed by the fade-in system
+    scrollIndicator.style.opacity = '1';
+    scrollIndicator.style.transform = 'translateX(-50%)';
   }
 
   // Also move slide menu to body to avoid positioning issues
@@ -236,12 +263,14 @@ function initLocomotiveScroll() {
         setTimeout(() => {
           checkElementsInView();
           updateFloatingButton(scrollY);
+          updateScrollIndicator(scrollY);
           window.mobileScrollThrottle = false;
         }, 16);
       }
     } else {
       checkElementsInView();
       updateFloatingButton(scrollY);
+      updateScrollIndicator(scrollY);
     }
 
     if (args.scroll.y < 50 && !isMobileDevice()) {
@@ -396,6 +425,35 @@ function checkElementsInView() {
         // Make the container visible
         gsap.set(el, { opacity: 1 });
 
+      } else if (el.classList.contains('sort-container')) {
+        console.log('🔵 Animating sort container with dropdown pop-in effect');
+
+        // Kill any existing animations
+        gsap.killTweensOf(el);
+
+        const dropdown = el.querySelector('.sort-dropdown');
+        if (dropdown) {
+          // Set initial state
+          gsap.set(dropdown, { opacity: 0, scale: 0.1 });
+          
+          // Animate dropdown pop-in
+          gsap.to(dropdown, {
+            opacity: 1,
+            scale: 1,
+            duration: 0.4,
+            ease: 'back.out(1.7)', // Bouncy effect like footer buttons
+            delay: 0.1, // Small delay for dramatic effect
+            onComplete: () => {
+              // After dropdown finishes, animate in thumbnails
+              console.log('🖼️ Starting thumbnail animations after dropdown');
+              animatePortfolioThumbnails();
+            }
+          });
+        }
+        
+        // Make sure container is visible
+        gsap.set(el, { opacity: 1 });
+
       } else {
         console.log('🔵 Animating regular element with slide-in effect:', el.className, el.tagName);
 
@@ -470,6 +528,40 @@ function checkElementsInView() {
         });
       }
     }
+  }
+}
+
+// ================= SCROLL INDICATOR FADE =================
+function updateScrollIndicator(scrollY) {
+  const scrollIndicator = document.querySelector('.scroll-indicator');
+  if (!scrollIndicator) return;
+  
+  // Use a quicker fade that starts sooner
+  const fadeStartPoint = 50;  // Start fading after just 50px (was 200px)
+  const fadeEndPoint = 300;   // Completely hidden after 300px (was 600px)
+  
+  let opacity;
+  if (scrollY <= fadeStartPoint) {
+    // Fully visible at the top
+    opacity = 1;
+  } else if (scrollY >= fadeEndPoint) {
+    // Completely hidden after fade end point
+    opacity = 0;
+  } else {
+    // Gradual fade between start and end points
+    const fadeRange = fadeEndPoint - fadeStartPoint;
+    const scrollRange = scrollY - fadeStartPoint;
+    opacity = 1 - (scrollRange / fadeRange);
+  }
+  
+  // Apply the opacity with smooth transitions
+  scrollIndicator.style.opacity = opacity;
+  
+  // Add or remove the fade-out class for additional CSS control
+  if (opacity <= 0.1) {
+    scrollIndicator.classList.add('fade-out');
+  } else {
+    scrollIndicator.classList.remove('fade-out');
   }
 }
 
@@ -573,13 +665,17 @@ function initMagneticNavDot() {
   }
   
   // Add hover listeners to nav items
-  navItems.forEach(item => {
+  navItems.forEach((item, index) => {
+    const link = item.querySelector('a');
+    if (!link) return;
+    
     item.addEventListener('mouseenter', () => {
+      // Purple dot movement
       magneticDot.classList.add('show');
       gsap.to(magneticDot, {
         x: getItemCenterX(item),
-        duration: 0.28,
-        ease: 'back.out(2)'
+        duration: 0.3,
+        ease: 'power2.inOut'
       });
     });
   });
@@ -589,15 +685,144 @@ function initMagneticNavDot() {
     if (activeItem) {
       gsap.to(magneticDot, {
         x: getItemCenterX(activeItem),
-        duration: 0.4,
-        ease: 'back.out(1.5)'
+        duration: 0.35,
+        ease: 'power2.inOut'
       });
     } else {
       magneticDot.classList.remove('show');
     }
   });
+}
+
+// ================= SLIDE MENU MAGNETIC DOT =================
+function initSlideMagneticNavDot() {
+  const slideMagneticDot = document.querySelector('.slide-nav-magnetic-dot');
+  const slideNavList = document.querySelector('.slide-nav-list');
+  const slideNavItems = document.querySelectorAll('.slide-nav-item');
+  const slideActiveItem = document.querySelector('.slide-nav-item.active');
   
-  console.log('🟣 Magnetic nav dot initialized');
+  console.log('Slide nav debug:', {
+    dot: !!slideMagneticDot,
+    list: !!slideNavList,
+    itemsCount: slideNavItems.length,
+    activeItem: slideActiveItem?.querySelector('a')?.textContent
+  });
+  
+  if (!slideMagneticDot || !slideNavList || slideNavItems.length === 0) return;
+  
+  // Position dot on active item initially
+  if (slideActiveItem) {
+    console.log('Positioning dot on active item:', slideActiveItem.querySelector('a')?.textContent);
+    positionSlideNavDotOnItem(slideMagneticDot, slideActiveItem);
+    slideMagneticDot.classList.add('show');
+  }
+  
+  // Add hover listeners to slide nav items
+  slideNavItems.forEach((item, index) => {
+    const link = item.querySelector('a');
+    if (!link) return;
+    
+    console.log(`Setting up slide nav item ${index}: ${link.textContent}`);
+    
+    item.addEventListener('mouseenter', () => {
+      console.log(`Hovering over: ${link.textContent}`);
+      // Purple dot movement
+      slideMagneticDot.classList.add('show');
+      gsap.to(slideMagneticDot, {
+        y: getSlideItemCenterY(item),
+        duration: 0.3,
+        ease: 'power2.inOut'
+      });
+    });
+  });
+  
+  // Return to active item when leaving slide nav
+  slideNavList.addEventListener('mouseleave', () => {
+    if (slideActiveItem) {
+      console.log('Mouse left slide nav, returning to active item');
+      gsap.to(slideMagneticDot, {
+        y: getSlideItemCenterY(slideActiveItem),
+        duration: 0.35,
+        ease: 'power2.inOut'
+      });
+    } else {
+      slideMagneticDot.classList.remove('show');
+    }
+  });
+}
+
+function positionSlideNavDotOnItem(dot, item) {
+  const y = getSlideItemCenterY(item);
+  gsap.set(dot, { y: y });
+}
+
+function getSlideItemCenterY(item) {
+  const slideNavList = document.querySelector('.slide-nav-list');
+  
+  // Use offsetTop for more reliable positioning
+  const itemOffsetTop = item.offsetTop;
+  const itemHeight = item.offsetHeight;
+  const centerY = itemOffsetTop + (itemHeight / 2) - 5; // -5 to center the 10px dot
+  
+  console.log(`Slide Item: ${item.querySelector('a')?.textContent}, OffsetTop: ${itemOffsetTop}, Height: ${itemHeight}, CenterY: ${centerY}`);
+  return centerY;
+}
+
+// Add magnetic effects to nav links
+function addNavMagneticEffects() {
+  // Simple, direct approach
+  document.addEventListener('DOMContentLoaded', () => {
+    const links = document.querySelectorAll('.nav-item a');
+    
+    links.forEach(link => {
+      // Force inline styles to override everything
+      link.style.setProperty('transition', 'none', 'important');
+      link.style.setProperty('transform-origin', 'center center', 'important');
+      
+      link.onmouseenter = function() {
+        this.style.transform = 'scale(1.15)';
+        this.style.transition = 'transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+      };
+      
+      link.onmouseleave = function() {
+        this.style.transform = 'scale(1)';
+        this.style.transition = 'transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+      };
+      
+      link.onmousemove = function(e) {
+        const rect = this.getBoundingClientRect();
+        const x = (e.clientX - rect.left - rect.width / 2) * 0.4;
+        const y = (e.clientY - rect.top - rect.height / 2) * 0.4;
+        this.style.transform = `scale(1.15) translate(${x}px, ${y}px)`;
+        this.style.transition = 'none';
+      };
+    });
+  });
+  
+  // Also try immediately
+  const links = document.querySelectorAll('.nav-item a');
+  links.forEach(link => {
+    link.style.setProperty('transition', 'none', 'important');
+    link.style.setProperty('transform-origin', 'center center', 'important');
+    
+    link.onmouseenter = function() {
+      this.style.transform = 'scale(1.15)';
+      this.style.transition = 'transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+    };
+    
+    link.onmouseleave = function() {
+      this.style.transform = 'scale(1)';
+      this.style.transition = 'transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+    };
+    
+    link.onmousemove = function(e) {
+      const rect = this.getBoundingClientRect();
+      const x = (e.clientX - rect.left - rect.width / 2) * 0.4;
+      const y = (e.clientY - rect.top - rect.height / 2) * 0.4;
+      this.style.transform = `scale(1.15) translate(${x}px, ${y}px)`;
+      this.style.transition = 'none';
+    };
+  });
 }
 
 function positionDotOnItem(dot, item) {
@@ -621,8 +846,8 @@ function getItemCenterX(item) {
 
 // ================= MAGNETIC BUTTON EFFECTS =================
 function initMagneticButtons() {
-  // Apply to footer buttons and nav menu items
-  const magneticElements = document.querySelectorAll('.magnetic-btn, .nav-item a, .slide-nav-item a, .close-btn');
+  // Apply to footer buttons, slide nav items, and dropdown (nav items handled in initMagneticNavDot)
+  const magneticElements = document.querySelectorAll('.magnetic-btn, .slide-nav-item a, .close-btn, .sort-dropdown');
 
   magneticElements.forEach((btn) => {
     // Disable CSS transitions that conflict with GSAP
@@ -630,8 +855,8 @@ function initMagneticButtons() {
     btn.style.willChange = 'auto';
 
     btn.addEventListener('mouseenter', () => {
-      // Reduced scale for slide nav items
-      const scale = btn.closest('.slide-nav-item') ? 1.05 : 1.1;
+      // Reduced scale for slide nav items and dropdown
+      const scale = btn.closest('.slide-nav-item') || btn.classList.contains('sort-dropdown') ? 1.05 : 1.1;
       
       gsap.to(btn, {
         scale: scale,
@@ -648,8 +873,13 @@ function initMagneticButtons() {
       const x = e.clientX - rect.left - rect.width / 2;
       const y = e.clientY - rect.top - rect.height / 2;
       
-      // Reduced movement for slide nav items
-      const multiplier = btn.closest('.slide-nav-item') ? 0.15 : 0.3;
+      // Much more reduced movement for slide nav items
+      let multiplier = 0.3; // Default for footer buttons
+      if (btn.closest('.slide-nav-item')) {
+        multiplier = 0.05; // Very subtle movement for slide menu
+      } else if (btn.classList.contains('sort-dropdown')) {
+        multiplier = 0.15; // Slightly more for dropdown
+      }
       
       gsap.to(btn, {
         x: x * multiplier,
@@ -957,6 +1187,97 @@ function forceCheckVisible() {
     if (locoScroll) locoScroll.update();
     console.log('🔄 Final Locomotive Scroll update');
   }, 2000);
+}
+
+// ================= PORTFOLIO THUMBNAIL ANIMATIONS =================
+function animatePortfolioThumbnails() {
+  const projectItems = document.querySelectorAll('.project-item');
+  
+  if (projectItems.length === 0) {
+    console.log('⚠️ No project items found for animation');
+    return;
+  }
+  
+  console.log(`🖼️ Animating ${projectItems.length} portfolio thumbnails`);
+  
+  // Animate thumbnails with stagger effect
+  gsap.fromTo(projectItems, 
+    {
+      opacity: 0,
+      scale: 0.8,
+      y: 30
+    },
+    {
+      opacity: 1,
+      scale: 1,
+      y: 0,
+      duration: 0.6,
+      ease: 'back.out(1.2)',
+      stagger: 0.1, // 100ms delay between each thumbnail
+      delay: 0.2 // Small delay after dropdown completes
+    }
+  );
+}
+
+// ================= PORTFOLIO FILTERING =================
+function initPortfolioFilter() {
+  const sortDropdown = document.getElementById('portfolio-sort');
+  const projectItems = document.querySelectorAll('.project-item');
+  
+  if (!sortDropdown || projectItems.length === 0) {
+    console.log('⚠️ Portfolio filter elements not found');
+    return;
+  }
+  
+  // Set initial state for thumbnails (hidden for animation)
+  projectItems.forEach(item => {
+    gsap.set(item, { opacity: 0, scale: 0.8, y: 30 });
+  });
+  console.log('🎯 Portfolio thumbnails set to hidden for animation');
+  
+  sortDropdown.addEventListener('change', (e) => {
+    const selectedCategory = e.target.value;
+    console.log(`🔍 Filtering by: ${selectedCategory}`);
+    
+    projectItems.forEach((item) => {
+      const itemCategory = item.getAttribute('data-category');
+      const shouldShow = selectedCategory === 'all' || itemCategory === selectedCategory;
+      
+      if (shouldShow) {
+        gsap.to(item, {
+          opacity: 1,
+          scale: 1,
+          duration: 0.3,
+          ease: 'power2.out',
+          onStart: () => {
+            item.style.display = 'block';
+            item.classList.remove('hidden');
+          }
+        });
+      } else {
+        gsap.to(item, {
+          opacity: 0,
+          scale: 0.8,
+          duration: 0.2,
+          ease: 'power2.in',
+          onComplete: () => {
+            item.style.display = 'none';
+            item.classList.add('hidden');
+          }
+        });
+      }
+    });
+    
+    // Update Locomotive Scroll after filtering
+    if (locoScroll) {
+      setTimeout(() => {
+        locoScroll.update();
+        console.log('🔄 Locomotive Scroll updated after filtering');
+      }, 350);
+    }
+  });
+  
+  console.log('🔍 Portfolio filter initialized');
 }
 
 // ================= HELPER: IS MOBILE =================

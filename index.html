@@ -7,19 +7,19 @@
   <title>Mark Sexton | Portfolio</title>
   
   <!-- Favicon -->
-  <link rel="apple-touch-icon" sizes="180x180" href="./public/favicon_io/apple-touch-icon.png">
-  <link rel="icon" type="image/png" sizes="32x32" href="./public/favicon_io/favicon-32x32.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="./public/favicon_io/favicon-16x16.png">
-  <link rel="manifest" href="./public/favicon_io/site.webmanifest">
-  <link rel="shortcut icon" href="./public/favicon_io/favicon.ico">
+  <link rel="apple-touch-icon" sizes="180x180" href="./public/icons/favicon_io/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="./public/icons/favicon_io/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="./public/icons/favicon_io/favicon-16x16.png">
+  <link rel="manifest" href="./public/icons/favicon_io/site.webmanifest">
+  <link rel="shortcut icon" href="./public/icons/favicon_io/favicon.ico">
   
   <!-- Preload video thumbnails for faster display -->
-  <link rel="preload" href="./public/wave-loop-5.30.jpg" as="image">
-  <link rel="preload" href="./public/wave-loop-mobile-5.30.jpg" as="image">
+  <link rel="preload" href="./public/hero/wave-loop-5.30.jpg" as="image">
+  <link rel="preload" href="./public/hero/wave-loop-mobile-5.30.jpg" as="image">
   
   <!-- Preload critical videos -->
-  <link rel="preload" href="./public/wave-loop-5.30.mp4" as="video" type="video/mp4" media="(min-width: 769px)">
-  <link rel="preload" href="./public/wave-loop-mobile-5.30.mp4" as="video" type="video/mp4" media="(max-width: 768px)">
+  <link rel="preload" href="./public/hero/wave-loop-5.30.mp4" as="video" type="video/mp4" media="(min-width: 769px)">
+  <link rel="preload" href="./public/hero/wave-loop-mobile-5.30.mp4" as="video" type="video/mp4" media="(max-width: 768px)">
   
   <link rel="stylesheet" href="styles.css">
   <script src="https://cdn.jsdelivr.net/npm/locomotive-scroll@4.1.4/dist/locomotive-scroll.min.js"></script>
@@ -35,14 +35,14 @@
       
       <video class="background-video" autoplay muted loop playsinline webkit-playsinline preload="metadata">
         <!-- Mobile sources (for screens 768px and below) -->
-        <source src="./public/wave-loop-mobile-5.30.mp4" type="video/mp4" media="(max-width: 768px)" />
-        <source src="./public/wave-loop-mobile-5.30.webm" type="video/webm" media="(max-width: 768px)" />
+        <source src="./public/hero/wave-loop-mobile-5.30.mp4" type="video/mp4" media="(max-width: 768px)" />
+        <source src="./public/hero/wave-loop-mobile-5.30.webm" type="video/webm" media="(max-width: 768px)" />
         <!-- Desktop sources (for screens above 768px) -->
-        <source src="./public/wave-loop-5.30.mp4" type="video/mp4" media="(min-width: 769px)" />
-        <source src="./public/wave-loop-5.30.webm" type="video/webm" media="(min-width: 769px)" />
+        <source src="./public/hero/wave-loop-5.30.mp4" type="video/mp4" media="(min-width: 769px)" />
+        <source src="./public/hero/wave-loop-5.30.webm" type="video/webm" media="(min-width: 769px)" />
         <!-- Fallback sources (no media query) -->
-        <source src="./public/wave-loop-5.30.mp4" type="video/mp4" />
-        <source src="./public/wave-loop-5.30.webm" type="video/webm" />
+        <source src="./public/hero/wave-loop-5.30.mp4" type="video/mp4" />
+        <source src="./public/hero/wave-loop-5.30.webm" type="video/webm" />
         Your browser doesn't support HTML5 video.
       </video>
       
@@ -58,9 +58,12 @@
           <button class="nav-toggle">Menu</button>
         </nav>
       </header>
-      <img class="corner-fade" src="./public/corner-fade.png" alt="Corner fade effect">
-      <img class="hero-logo hero-logo-desktop" src="./public/marksexton-1.svg" alt="Mark Sexton logo">
-      <img class="hero-logo hero-logo-mobile" src="./public/marksextonstacked-1.svg" alt="Mark Sexton mobile logo">
+      <img class="corner-fade" src="./public/icons/corner-fade.png" alt="Corner fade effect">
+      <img class="hero-logo hero-logo-desktop" src="./public/icons/marksexton-1.svg" alt="Mark Sexton logo">
+      <img class="hero-logo hero-logo-mobile" src="./public/icons/marksextonstacked-1.svg" alt="Mark Sexton mobile logo">
+      <div class="scroll-indicator">
+        <img class="down-arrow" src="./public/icons/down-arrow.svg" alt="Scroll down indicator">
+      </div>
     </section>
     <main class="page-content">
       <div class="page-text">
@@ -78,12 +81,12 @@
       </div>
       <div class="portfolio-peek-wrapper">
         <div class="purple-circle"></div>
-        <img class="portfolio-peek" src="./public/circular-type.svg" alt="Portfolio preview">
+        <img class="portfolio-peek" src="./public/icons/circular-type.svg" alt="Portfolio preview">
       </div>
     </main>
     <footer class="footer">
       <h2 class="footer-title fade-in">
-        <div class="line-wrapper"><span class="line">Let's work together on your next project</span></div>
+        <div class="line-wrapper"><span class="line">Great ideas begin with a conversation</span></div>
       </h2>
       <div class="footer-contact fade-in">
         <a href="mailto:mscreativeonline@gmail.com" class="btn btn-outline magnetic-btn">mscreativeonline@gmail.com</a>
@@ -101,6 +104,7 @@
       <div class="menu-content">
         <div class="menu-separator"></div>
         <ul class="slide-nav-list">
+          <div class="slide-nav-magnetic-dot"></div>
           <li class="slide-nav-item active"><a href="#">Home</a></li>
           <li class="slide-nav-item"><a href="pages/work.html">Work</a></li>
           <li class="slide-nav-item"><a href="pages/about.html">About</a></li>
