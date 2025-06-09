@@ -176,21 +176,70 @@ function setupInitialStates() {
       if (isMobileDevice() || window.innerWidth <= 768) {
         console.log('Setting up footer title for mobile/narrow viewport - keeping visible:', el);
         gsap.set(el, { opacity: 1, y: 0 });
+      } else if (el.classList.contains('resume-section')) {
+        console.log('🔵 Animating resume section with button scale-in effect');
+
+        // Kill any existing animations
+        gsap.killTweensOf(el);
+
+        const resumeButton = el.querySelector('.resume-download-btn');
+        if (resumeButton) {
+          // Set initial state for button - start scaled down like dropdown
+          gsap.set(resumeButton, { opacity: 0, scale: 0.1 });
+          
+          // Animate button scale-in like the dropdown
+          gsap.to(resumeButton, {
+            opacity: 1,
+            scale: 1,
+            duration: 0.4,
+            ease: 'back.out(1.7)', // Same bouncy effect as dropdown
+            delay: 0.1, // Small delay like dropdown
+          });
+        }
+        
+        // Animate the text content normally
+        const textContent = el.querySelector('p');
+        if (textContent) {
+          gsap.fromTo(
+            textContent,
+            { opacity: 0, y: 20 },
+            {
+              opacity: 1,
+              y: 0,
+              duration: 0.4,
+              ease: 'power2.out',
+            }
+          );
+        }
+        
+        // Make sure container is visible
+        gsap.set(el, { opacity: 1 });
+
       } else {
         console.log('Setting up footer title for desktop - hiding for animation:', el);
         gsap.set(el, { opacity: 0, y: 40 });
       }
     } else if (el.classList.contains('sort-container')) {
-      // Special handling for sort container - hide dropdown for pop-in effect
-      console.log('Setting up sort container for pop-in animation:', el);
-      gsap.set(el, { opacity: 1 });
-      
-      const dropdown = el.querySelector('.sort-dropdown');
-      if (dropdown) {
-        gsap.set(dropdown, { opacity: 0, scale: 0.1 });
-        console.log('Dropdown set to scale 0.1 for pop-in effect');
-      }
-    } else {
+    // Special handling for sort container - hide dropdown for pop-in effect
+    console.log('Setting up sort container for pop-in animation:', el);
+    gsap.set(el, { opacity: 1 });
+    
+    const dropdown = el.querySelector('.sort-dropdown');
+    if (dropdown) {
+    gsap.set(dropdown, { opacity: 0, scale: 0.1 });
+    console.log('Dropdown set to scale 0.1 for pop-in effect');
+    }
+    } else if (el.classList.contains('resume-section')) {
+        // Special handling for resume section - hide button for scale-in effect
+        console.log('Setting up resume section for scale-in animation:', el);
+        gsap.set(el, { opacity: 1 });
+        
+        const resumeButton = el.querySelector('.resume-download-btn');
+        if (resumeButton) {
+          gsap.set(resumeButton, { opacity: 0, scale: 0.1 });
+          console.log('Resume button set to scale 0.1 for scale-in effect');
+        }
+      } else {
       console.log('Setting up regular fade element:', el);
       gsap.set(el, { opacity: 0, y: 40 }); // More pronounced initial offset
     }
@@ -454,6 +503,44 @@ function checkElementsInView() {
         // Make sure container is visible
         gsap.set(el, { opacity: 1 });
 
+      } else if (el.classList.contains('resume-section')) {
+        console.log('🔵 Animating resume section with button scale-in effect');
+
+        // Kill any existing animations
+        gsap.killTweensOf(el);
+
+        const resumeButton = el.querySelector('.resume-download-btn');
+        if (resumeButton) {
+          // Set initial state for button - start scaled down like dropdown
+          gsap.set(resumeButton, { opacity: 0, scale: 0.1 });
+          
+          // Animate button scale-in like the dropdown
+          gsap.to(resumeButton, {
+            opacity: 1,
+            scale: 1,
+            duration: 0.4,
+            ease: 'back.out(1.7)', // Same bouncy effect as dropdown
+            delay: 0.1, // Small delay like dropdown
+          });
+        }
+        
+        // Animate the text content normally
+        const textContent = el.querySelector('p');
+        if (textContent) {
+          gsap.fromTo(
+            textContent,
+            { opacity: 0, y: 20 },
+            {
+              opacity: 1,
+              y: 0,
+              duration: 0.4,
+              ease: 'power2.out',
+            }
+          );
+        }
+        
+        // Make sure container is visible
+        gsap.set(el, { opacity: 1 });
       } else {
         console.log('🔵 Animating regular element with slide-in effect:', el.className, el.tagName);
 
@@ -846,8 +933,8 @@ function getItemCenterX(item) {
 
 // ================= MAGNETIC BUTTON EFFECTS =================
 function initMagneticButtons() {
-  // Apply to footer buttons, slide nav items, and dropdown (nav items handled in initMagneticNavDot)
-  const magneticElements = document.querySelectorAll('.magnetic-btn, .slide-nav-item a, .close-btn, .sort-dropdown');
+  // Apply to footer buttons, slide nav items, dropdown, and resume button
+  const magneticElements = document.querySelectorAll('.magnetic-btn, .slide-nav-item a, .close-btn, .sort-dropdown, .resume-download-btn');
 
   magneticElements.forEach((btn) => {
     // Disable CSS transitions that conflict with GSAP
@@ -874,7 +961,7 @@ function initMagneticButtons() {
       const y = e.clientY - rect.top - rect.height / 2;
       
       // Much more reduced movement for slide nav items
-      let multiplier = 0.3; // Default for footer buttons
+      let multiplier = 0.3; // Default for footer buttons and resume button
       if (btn.closest('.slide-nav-item')) {
         multiplier = 0.05; // Very subtle movement for slide menu
       } else if (btn.classList.contains('sort-dropdown')) {
