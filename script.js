@@ -125,6 +125,10 @@ function setupMobileVideo() {
       locoScroll.update();
       console.log('🎬 Locomotive Scroll updated after video canplaythrough');
     }
+    // For mobile using native scroll, trigger a check
+    if (isMobileDevice()) {
+      setTimeout(checkElementsInView, 100);
+    }
   });
 
   if (isMobileDevice()) {
@@ -286,43 +290,29 @@ function setupInitialStates() {
 
 // ================= LOCOMOTIVE SCROLL SETUP =================
 function initLocomotiveScroll() {
+  // Skip Locomotive Scroll on mobile devices - use native scroll instead
+  if (isMobileDevice()) {
+    console.log('📱 Mobile device detected - using native scroll instead of Locomotive Scroll');
+    initNativeScroll();
+    return;
+  }
+
   locoScroll = new LocomotiveScroll({
     el: document.querySelector('[data-scroll-container]'),
     smooth: true,
     multiplier: 0.8,
     class: 'is-revealed',
-    smartphone: {
-      smooth: true,
-      multiplier: 2.0,
-    },
-    tablet: {
-      smooth: true,
-      multiplier: 2.0,
-    },
     lerp: 0.1,
     reloadOnContextChange: true,
   });
 
   locoScroll.on('scroll', (args) => {
     const scrollY = args.scroll.y;
+    checkElementsInView();
+    updateFloatingButton(scrollY);
+    updateScrollIndicator(scrollY);
 
-    if (isMobileDevice()) {
-      if (!window.mobileScrollThrottle) {
-        window.mobileScrollThrottle = true;
-        setTimeout(() => {
-          checkElementsInView();
-          updateFloatingButton(scrollY);
-          updateScrollIndicator(scrollY);
-          window.mobileScrollThrottle = false;
-        }, 16);
-      }
-    } else {
-      checkElementsInView();
-      updateFloatingButton(scrollY);
-      updateScrollIndicator(scrollY);
-    }
-
-    if (args.scroll.y < 50 && !isMobileDevice()) {
+    if (args.scroll.y < 50) {
       document
         .querySelectorAll('.hero .fade-in')
         .forEach((el) => animatedElements.delete(el));
@@ -343,7 +333,36 @@ function initLocomotiveScroll() {
     ScrollTrigger.refresh();
   }
 
-  console.log('🌀 Locomotive Scroll initialized');
+  console.log('🌀 Locomotive Scroll initialized for desktop');
+}
+
+// ================= NATIVE SCROLL SETUP (MOBILE) =================
+function initNativeScroll() {
+  // Use native browser scrolling for mobile devices
+  let scrollTimeout;
+  
+  window.addEventListener('scroll', () => {
+    const scrollY = window.pageYOffset || document.documentElement.scrollTop;
+    
+    // Throttle scroll events for better performance on mobile
+    if (!scrollTimeout) {
+      scrollTimeout = setTimeout(() => {
+        checkElementsInView();
+        updateFloatingButton(scrollY);
+        updateScrollIndicator(scrollY);
+        scrollTimeout = null;
+      }, 16); // ~60fps
+    }
+
+    // Reset animation tracking when near top
+    if (scrollY < 50) {
+      document
+        .querySelectorAll('.hero .fade-in')
+        .forEach((el) => animatedElements.delete(el));
+    }
+  }, { passive: true });
+
+  console.log('📱 Native scroll initialized for mobile');
 }
 
 // ================= FADE-IN ON SCROLL (GSAP) =================
@@ -1056,6 +1075,10 @@ function closeSlideMenu() {
         // Force a scroll update to check floating button state
         const currentScroll = locoScroll.scroll.instance.scroll.y;
         updateFloatingButton(currentScroll);
+      } else {
+        // For mobile using native scroll
+        const currentScroll = window.pageYOffset || document.documentElement.scrollTop;
+        updateFloatingButton(currentScroll);
       }
     },
   });
@@ -1107,41 +1130,27 @@ function addEventListeners() {
         // Destroy existing instance
         locoScroll.destroy();
         
-        // Recreate scroll instance
-        locoScroll = new LocomotiveScroll({
-          el: document.querySelector('[data-scroll-container]'),
-          smooth: true,
-          multiplier: 0.8,
-          class: 'is-revealed',
-          smartphone: {
+        // Recreate scroll instance (desktop only)
+        if (!isMobileDevice()) {
+          locoScroll = new LocomotiveScroll({
+            el: document.querySelector('[data-scroll-container]'),
             smooth: true,
-            multiplier: 2.0,
-          },
-          tablet: {
-            smooth: true,
-            multiplier: 2.0,
-          },
-          lerp: 0.1,
-          reloadOnContextChange: true,
-        });
+            multiplier: 0.8,
+            class: 'is-revealed',
+            lerp: 0.1,
+            reloadOnContextChange: true,
+          });
+        }
         
-        // Re-setup scroll events
-        locoScroll.on('scroll', (args) => {
-          const scrollY = args.scroll.y;
-          if (isMobileDevice()) {
-            if (!window.mobileScrollThrottle) {
-              window.mobileScrollThrottle = true;
-              setTimeout(() => {
-                checkElementsInView();
-                updateFloatingButton(scrollY);
-                window.mobileScrollThrottle = false;
-              }, 16);
-            }
-          } else {
+        // Re-setup scroll events (if locoScroll exists for desktop)
+        if (locoScroll) {
+          locoScroll.on('scroll', (args) => {
+            const scrollY = args.scroll.y;
             checkElementsInView();
             updateFloatingButton(scrollY);
-          }
-        });
+            updateScrollIndicator(scrollY);
+          });
+        }
         
         // Re-setup ScrollTrigger if available
         if (typeof ScrollTrigger !== 'undefined') {
@@ -1160,8 +1169,14 @@ function addEventListeners() {
         
         // Refresh everything
         checkElementsInView();
-        const currentScroll = locoScroll.scroll.instance.scroll.y;
-        updateFloatingButton(currentScroll);
+        if (locoScroll) {
+          const currentScroll = locoScroll.scroll.instance.scroll.y;
+          updateFloatingButton(currentScroll);
+        } else {
+          // For mobile using native scroll
+          const currentScroll = window.pageYOffset || document.documentElement.scrollTop;
+          updateFloatingButton(currentScroll);
+        }
         
         console.log('✅ Locomotive Scroll completely reinitialized');
       }, 150);
