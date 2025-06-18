@@ -120,6 +120,13 @@ function setupMobileVideo() {
   const video = document.querySelector('.background-video');
   if (!video) return;
 
+  // Disable video entirely on iOS to prevent freezing
+  if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
+    video.style.display = 'none';
+    console.log('🚫 Video disabled on iOS device');
+    return;
+  }
+
   video.addEventListener('canplaythrough', () => {
     if (locoScroll) {
       locoScroll.update();
@@ -290,9 +297,9 @@ function setupInitialStates() {
 
 // ================= LOCOMOTIVE SCROLL SETUP =================
 function initLocomotiveScroll() {
-  // Skip Locomotive Scroll on mobile devices - use native scroll instead
-  if (isMobileDevice()) {
-    console.log('📱 Mobile device detected - using native scroll instead of Locomotive Scroll');
+  // Skip Locomotive Scroll on mobile devices and especially iOS - use native scroll instead
+  if (isMobileDevice() || isIOSDevice()) {
+    console.log('📱 Mobile/iOS device detected - using native scroll instead of Locomotive Scroll');
     initNativeScroll();
     return;
   }
@@ -597,9 +604,9 @@ function checkElementsInView() {
     }
   });
 
-  // Handle portfolio peek rotation
+  // Handle portfolio peek rotation - skip on iOS to prevent freezing
   const portfolioPeek = document.querySelector('.portfolio-peek');
-  if (portfolioPeek) {
+  if (portfolioPeek && !isIOSDevice()) {
     const container = document.querySelector('.portfolio-peek-wrapper');
 
     if (container) {
@@ -634,6 +641,9 @@ function checkElementsInView() {
         });
       }
     }
+  } else if (portfolioPeek && isIOSDevice()) {
+    // Static positioning for iOS to prevent performance issues
+    portfolioPeek.style.transform = 'translateY(6%)';
   }
 }
 
@@ -1196,17 +1206,19 @@ function addEventListeners() {
   };
   window.addEventListener('focus', handleFocus);
 
-  // Chrome-specific fix for page show event
+  // Chrome-specific fix for page show event - skip on iOS
   const handlePageShow = (e) => {
-    if (locoScroll) {
-      setTimeout(() => {
-        locoScroll.update();
-        locoScroll.start();
-        console.log('🔄 Locomotive Scroll restarted on page show');
-      }, 300);
-    }
+  if (locoScroll && !isIOSDevice()) {
+  setTimeout(() => {
+  locoScroll.update();
+  locoScroll.start();
+  console.log('🔄 Locomotive Scroll restarted on page show');
+  }, 300);
+  }
   };
-  window.addEventListener('pageshow', handlePageShow);
+  if (!isIOSDevice()) {
+    window.addEventListener('pageshow', handlePageShow);
+  }
 
   // Additional Chrome fix - listen for document becoming visible
   let lastActiveTime = Date.now();
@@ -1389,4 +1401,8 @@ function isMobileDevice() {
       navigator.userAgent
     ) || window.innerWidth <= 768
   );
+}
+
+function isIOSDevice() {
+  return /iPad|iPhone|iPod/.test(navigator.userAgent);
 }

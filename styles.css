@@ -125,8 +125,17 @@
 /* At the very top of your styles.css */
 html {
   box-sizing: border-box;
-  overflow: hidden;
-  max-height: 100%;
+  /* Don't hide overflow on iOS to prevent freezing */
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Only hide overflow on desktop for Locomotive Scroll */
+@media (min-width: 769px) and (hover: hover) {
+  html {
+    overflow: hidden;
+    max-height: 100%;
+  }
 }
 
 *,
@@ -458,6 +467,25 @@ p {
   height: 100vh;
   object-fit: cover;
   z-index: -1;
+}
+
+/* iOS fallback background when video is disabled */
+@supports (-webkit-overflow-scrolling: touch) {
+  .hero {
+    background: linear-gradient(135deg, #000000 0%, #1a1a1a 50%, #000000 100%);
+  }
+  
+  /* Ensure hero still looks good without video on iOS */
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle at 30% 70%, rgba(80, 0, 255, 0.1) 0%, transparent 50%);
+    z-index: -1;
+  }
 }
 
 .corner-fade {
