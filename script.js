@@ -346,34 +346,129 @@ function initLocomotiveScroll() {
   
   // Add native scroll listener for mobile when smooth scrolling is disabled
   if (isMobile) {
-    // Ensure the scroll container allows native scrolling
-    const scrollContainer = document.querySelector('[data-scroll-container]');
-    if (scrollContainer) {
-      scrollContainer.style.overflow = 'visible';
-      scrollContainer.style.height = 'auto';
-      console.log('📱 Mobile: Enabled native scrolling on container');
-    }
+    // Add CSS to override any locomotive scroll styles
+    const mobileCSS = `
+      @media (hover: none) and (pointer: coarse) {
+        [data-scroll-container] {
+          overflow: visible !important;
+          height: auto !important;
+          position: static !important;
+          transform: none !important;
+          will-change: auto !important;
+        }
+        
+        body, html {
+          overflow: auto !important;
+          height: auto !important;
+          position: static !important;
+        }
+        
+        .has-scroll-smooth,
+        .has-scroll-init {
+          overflow: visible !important;
+        }
+      }
+    `;
     
-    // Ensure body can scroll
-    document.body.style.overflow = 'auto';
-    document.documentElement.style.overflow = 'auto';
-    console.log('📱 Mobile: Enabled native scrolling on body');
+    const styleElement = document.createElement('style');
+    styleElement.textContent = mobileCSS;
+    document.head.appendChild(styleElement);
+    console.log('📱 Mobile: Added CSS overrides');
     
+    // Aggressively reset all styles that could block scrolling
+    const resetMobileScrolling = () => {
+      const scrollContainer = document.querySelector('[data-scroll-container]');
+      if (scrollContainer) {
+        scrollContainer.style.overflow = 'visible !important';
+        scrollContainer.style.height = 'auto !important';
+        scrollContainer.style.position = 'static !important';
+        scrollContainer.style.transform = 'none !important';
+        scrollContainer.style.willChange = 'auto !important';
+        scrollContainer.style.backfaceVisibility = 'visible !important';
+        console.log('📱 Mobile: Aggressively reset scroll container');
+      }
+      
+      // Reset body and html
+      document.body.style.overflow = 'auto !important';
+      document.body.style.height = 'auto !important';
+      document.body.style.position = 'static !important';
+      document.documentElement.style.overflow = 'auto !important';
+      document.documentElement.style.height = 'auto !important';
+      
+      // Remove any locomotive scroll classes that might interfere
+      document.body.classList.remove('has-scroll-smooth', 'has-scroll-init');
+      
+      console.log('📱 Mobile: Aggressively reset body/html styles');
+    };
+    
+    // Reset immediately and after a delay
+    resetMobileScrolling();
+    setTimeout(resetMobileScrolling, 100);
+    setTimeout(resetMobileScrolling, 500);
+    
+    // Create enhanced scroll handler
+    let scrollTimeout;
     const handleNativeScroll = () => {
       const scrollY = window.pageYOffset || document.documentElement.scrollTop;
-      if (!window.mobileScrollThrottle) {
-        window.mobileScrollThrottle = true;
-        setTimeout(() => {
+      console.log('📱 Native scroll detected:', scrollY);
+      
+      // Clear existing timeout
+      if (scrollTimeout) {
+        clearTimeout(scrollTimeout);
+      }
+      
+      // Immediate call for responsiveness
+      try {
+        checkElementsInView();
+        updateFloatingButton(scrollY);
+        updateScrollIndicator(scrollY);
+      } catch (e) {
+        console.error('🚨 Mobile scroll handler error:', e);
+      }
+      
+      // Also call after scroll settles
+      scrollTimeout = setTimeout(() => {
+        try {
           checkElementsInView();
           updateFloatingButton(scrollY);
           updateScrollIndicator(scrollY);
-          window.mobileScrollThrottle = false;
-        }, 16);
-      }
+          console.log('📱 Native scroll settled:', scrollY);
+        } catch (e) {
+          console.error('🚨 Mobile scroll settled error:', e);
+        }
+      }, 100);
     };
     
+    // Add multiple scroll listeners for maximum compatibility
     window.addEventListener('scroll', handleNativeScroll, { passive: true });
-    console.log('📱 Mobile: Native scroll listener added');
+    document.addEventListener('scroll', handleNativeScroll, { passive: true });
+    
+    // Touch events for iOS
+    window.addEventListener('touchstart', () => {
+      setTimeout(handleNativeScroll, 10);
+    }, { passive: true });
+    
+    window.addEventListener('touchmove', () => {
+      setTimeout(handleNativeScroll, 10);
+    }, { passive: true });
+    
+    window.addEventListener('touchend', () => {
+      setTimeout(handleNativeScroll, 50);
+      setTimeout(handleNativeScroll, 200);
+    }, { passive: true });
+    
+    console.log('📱 Mobile: Enhanced native scroll listeners added');
+    
+    // Force initial animation checks
+    setTimeout(() => {
+      console.log('📱 Mobile: Forcing initial animation check (500ms)');
+      checkElementsInView();
+    }, 500);
+    
+    setTimeout(() => {
+      console.log('📱 Mobile: Forcing second animation check (1000ms)');
+      checkElementsInView();
+    }, 1000);
   }
 
   if (typeof ScrollTrigger !== 'undefined' && locoScroll && !isMobile) {
@@ -1435,5 +1530,25 @@ function isMobileDevice() {
   const isIPad = /ipad/i.test(userAgent) || 
     (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
   
-  return isMobileUA || isSmallScreen || isTouchDevice || isIPad;
+  // Additional checks for tablets
+  const isTablet = /tablet|ipad|playbook|silk/i.test(userAgent) ||
+    (navigator.maxTouchPoints > 1 && window.innerWidth > 768);
+  
+  const result = isMobileUA || isSmallScreen || isTouchDevice || isIPad || isTablet;
+  
+  // Debug logging
+  console.log('🔍 Mobile Detection Debug:', {
+    userAgent,
+    isMobileUA,
+    isSmallScreen,
+    isTouchDevice,
+    isIPad,
+    isTablet,
+    finalResult: result,
+    windowSize: `${window.innerWidth}x${window.innerHeight}`,
+    platform: navigator.platform,
+    touchPoints: navigator.maxTouchPoints
+  });
+  
+  return result;
 }
