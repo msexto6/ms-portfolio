@@ -109,13 +109,19 @@ function handlePageLoader() {
 
 // ================= DISABLE PINCH-ZOOM =================
 function disablePinchZoom() {
+  // Only prevent multi-touch pinch, allow single-touch scroll
   document.addEventListener(
     'touchmove',
     function (e) {
-      if (e.touches && e.touches.length > 1) e.preventDefault();
+      // Only prevent if it's a pinch gesture (2+ fingers)
+      if (e.touches && e.touches.length > 1) {
+        e.preventDefault();
+      }
+      // Allow single-touch scrolling by not preventing single touches
     },
     { passive: false }
   );
+  
   document.addEventListener('gesturestart', function (e) {
     e.preventDefault();
   });
@@ -293,6 +299,7 @@ function setupInitialStates() {
 // ================= LOCOMOTIVE SCROLL SETUP =================
 function initLocomotiveScroll() {
   const isMobile = isMobileDevice();
+  console.log('🔍 Mobile detection:', isMobile, '| UserAgent:', navigator.userAgent, '| Platform:', navigator.platform, '| Touch points:', navigator.maxTouchPoints, '| Window width:', window.innerWidth);
   
   locoScroll = new LocomotiveScroll({
     el: document.querySelector('[data-scroll-container]'),
@@ -336,8 +343,41 @@ function initLocomotiveScroll() {
         .forEach((el) => animatedElements.delete(el));
     }
   });
+  
+  // Add native scroll listener for mobile when smooth scrolling is disabled
+  if (isMobile) {
+    // Ensure the scroll container allows native scrolling
+    const scrollContainer = document.querySelector('[data-scroll-container]');
+    if (scrollContainer) {
+      scrollContainer.style.overflow = 'visible';
+      scrollContainer.style.height = 'auto';
+      console.log('📱 Mobile: Enabled native scrolling on container');
+    }
+    
+    // Ensure body can scroll
+    document.body.style.overflow = 'auto';
+    document.documentElement.style.overflow = 'auto';
+    console.log('📱 Mobile: Enabled native scrolling on body');
+    
+    const handleNativeScroll = () => {
+      const scrollY = window.pageYOffset || document.documentElement.scrollTop;
+      if (!window.mobileScrollThrottle) {
+        window.mobileScrollThrottle = true;
+        setTimeout(() => {
+          checkElementsInView();
+          updateFloatingButton(scrollY);
+          updateScrollIndicator(scrollY);
+          window.mobileScrollThrottle = false;
+        }, 16);
+      }
+    };
+    
+    window.addEventListener('scroll', handleNativeScroll, { passive: true });
+    console.log('📱 Mobile: Native scroll listener added');
+  }
 
-  if (typeof ScrollTrigger !== 'undefined' && locoScroll) {
+  if (typeof ScrollTrigger !== 'undefined' && locoScroll && !isMobile) {
+    // Only setup ScrollTrigger on desktop where smooth scrolling is enabled
     locoScroll.on('scroll', ScrollTrigger.update);
     ScrollTrigger.scrollerProxy('[data-scroll-container]', {
       scrollTop(value) {
@@ -351,7 +391,7 @@ function initLocomotiveScroll() {
     ScrollTrigger.refresh();
   }
 
-  console.log('🌀 Locomotive Scroll initialized');
+  console.log('🌀 Locomotive Scroll initialized - Smooth scrolling:', !isMobile ? 'ENABLED (Desktop)' : 'DISABLED (Mobile - using native)');
 }
 
 // ================= FADE-IN ON SCROLL (GSAP) =================
@@ -1385,9 +1425,15 @@ function initPortfolioFilter() {
 
 // ================= HELPER: IS MOBILE =================
 function isMobileDevice() {
-  return (
-    /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-      navigator.userAgent
-    ) || window.innerWidth <= 768
-  );
+  // More comprehensive mobile detection
+  const userAgent = navigator.userAgent.toLowerCase();
+  const isMobileUA = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(userAgent);
+  const isSmallScreen = window.innerWidth <= 768;
+  const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+  
+  // Check for iPad specifically (including newer iPads that report as Mac)
+  const isIPad = /ipad/i.test(userAgent) || 
+    (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  
+  return isMobileUA || isSmallScreen || isTouchDevice || isIPad;
 }
