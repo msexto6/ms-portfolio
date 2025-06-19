@@ -125,17 +125,8 @@
 /* At the very top of your styles.css */
 html {
   box-sizing: border-box;
-  /* Don't hide overflow on iOS to prevent freezing */
-  overflow: auto;
-  -webkit-overflow-scrolling: touch;
-}
-
-/* Only hide overflow on desktop for Locomotive Scroll */
-@media (min-width: 769px) and (hover: hover) {
-  html {
-    overflow: hidden;
-    max-height: 100%;
-  }
+  overflow: hidden;
+  max-height: 100%;
 }
 
 *,
@@ -232,71 +223,40 @@ body {
   margin: 0;
   padding: 0;
   overflow-x: hidden;
+  overflow-y: hidden;
   font-size: var(--fs-base);
   font-family: var(--font-sans);
   font-weight: 300;
   color: var(--text);
   line-height: 2.3;
   -webkit-overflow-scrolling: touch;
+  height: 100%;
+  max-height: 100%;
   width: 100%;
   background-color: #000000;
 }
 
-/* Mobile: Allow normal scrolling */
-@media (max-width: 768px) {
-  html, body {
-    overflow-y: auto;
-    height: auto;
-    max-height: none;
-  }
+/* Locomotive Scroll Setup */
+html.has-scroll-smooth {
+  overflow: hidden;
+  height: 100%;
 }
 
-/* Desktop: Locomotive Scroll handles overflow */
-@media (min-width: 769px) {
-  html, body {
-    overflow-y: hidden;
-    height: 100%;
-    max-height: 100%;
-  }
+html.has-scroll-dragging {
+  user-select: none;
 }
 
-/* Locomotive Scroll Setup - Desktop Only */
-@media (min-width: 769px) {
-  html.has-scroll-smooth {
-    overflow: hidden;
-    height: 100%;
-  }
-
-  html.has-scroll-dragging {
-    user-select: none;
-  }
-
-  .has-scroll-smooth body {
-    overflow: hidden;
-  }
+.has-scroll-smooth body {
+  overflow: hidden;
 }
 
 [data-scroll-container] {
   width: 100%;
   position: relative;
+  perspective: 1px;
+  overflow: hidden;
   background-color: #000000;
-}
-
-/* Desktop: Locomotive Scroll container */
-@media (min-width: 769px) {
-  [data-scroll-container] {
-    perspective: 1px;
-    overflow: hidden;
-    min-height: unset;
-  }
-}
-
-/* Mobile: Standard container */
-@media (max-width: 768px) {
-  [data-scroll-container] {
-    overflow: visible;
-    min-height: 100vh;
-  }
+  min-height: unset;
 }
 
 /* Typography */
@@ -467,25 +427,6 @@ p {
   height: 100vh;
   object-fit: cover;
   z-index: -1;
-}
-
-/* iOS fallback background when video is disabled */
-@supports (-webkit-overflow-scrolling: touch) {
-  .hero {
-    background: linear-gradient(135deg, #000000 0%, #1a1a1a 50%, #000000 100%);
-  }
-  
-  /* Ensure hero still looks good without video on iOS */
-  .hero::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: radial-gradient(circle at 30% 70%, rgba(80, 0, 255, 0.1) 0%, transparent 50%);
-    z-index: -1;
-  }
 }
 
 .corner-fade {
