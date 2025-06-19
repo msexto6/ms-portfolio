@@ -140,15 +140,12 @@ function setupInitialStates() {
       // Set the container to be visible
       gsap.set(el, { opacity: 1 });
       
-      // Only hide buttons for animation on desktop and wide viewports
-      if (!isMobileDevice() && window.innerWidth > 768) {
-        // Set all buttons inside to scale 0.1
-        const buttons = el.querySelectorAll('.btn, a');
-        buttons.forEach(btn => {
-          console.log('Setting up footer button:', btn);
-          gsap.set(btn, { opacity: 0, scale: 0.1 });
-        });
-      }
+      // Hide buttons for animation on ALL screen sizes and ensure no y transform
+      const buttons = el.querySelectorAll('.btn, a');
+      buttons.forEach(btn => {
+        console.log('Setting up footer button:', btn);
+        gsap.set(btn, { opacity: 0, scale: 0.1, y: 0 }); // Explicitly set y: 0
+      });
     } else if (el.classList.contains('footer-title')) {
       // Special handling for footer title - don't hide on narrow viewports
       if (isMobileDevice() || window.innerWidth <= 768) {
@@ -261,10 +258,11 @@ function checkElementsInView() {
 
   document.querySelectorAll('.fade-in').forEach((el) => {
     // Don't reset footer elements on mobile/narrow viewports once they've been animated
+    // But allow footer-contact buttons to reset for re-animation
     if (
       (isMobile || window.innerWidth <= 768) &&
       mobileFooterAnimated &&
-      (el.classList.contains('footer-title') || el.closest('.footer'))
+      el.classList.contains('footer-title') // Only lock footer-title, not footer-contact
     ) {
       return;
     }
@@ -309,7 +307,7 @@ function checkElementsInView() {
 
     // Remove from animated set if element goes out of view (to allow re-animation) - but not on mobile for footer
     if (isOutOfView && animatedElements.has(el)) {
-      if (!(isMobile && (el.classList.contains('footer-title') || el.closest('.footer')))) {
+      if (!(isMobile && el.classList.contains('footer-title'))) { // Only prevent reset for footer-title on mobile
         animatedElements.delete(el);
         console.log(`Element ${el.className} removed from animated set - can animate again`);
 
@@ -317,7 +315,7 @@ function checkElementsInView() {
         if (el.classList.contains('footer-contact')) {
           const buttons = el.querySelectorAll('.btn, a');
           buttons.forEach(btn => {
-            gsap.set(btn, { opacity: 0, scale: 0.1 });
+            gsap.set(btn, { opacity: 0, scale: 0.1, y: 0 });
           });
         } else {
           // Reset regular elements to hidden state
@@ -331,23 +329,15 @@ function checkElementsInView() {
 
       if (
         (isMobile || window.innerWidth <= 768) &&
-        (el.classList.contains('footer-title') || el.closest('.footer'))
+        el.classList.contains('footer-title') // Only lock animation for footer-title
       ) {
         mobileFooterAnimated = true;
-        console.log('📱 Mobile/narrow viewport footer animation locked in');
+        console.log('📱 Mobile/narrow viewport footer title animation locked in');
       }
 
       // Check if this is the footer-contact div containing buttons - use special handling
       if (el.classList.contains('footer-contact')) {
         console.log('🔵 Animating footer-contact container and buttons with pop-in effect');
-
-        // Skip button animations on mobile/narrow viewports - they're already visible via CSS
-        if (isMobile || window.innerWidth <= 768) {
-          // Just mark as animated
-          console.log('Skipping footer button animations on mobile/narrow viewport - using CSS visibility');
-          gsap.set(el, { opacity: 1 });
-          return;
-        }
 
         // Kill any existing animations
         gsap.killTweensOf(el);
@@ -355,26 +345,33 @@ function checkElementsInView() {
         // Find all buttons within this container
         const buttons = el.querySelectorAll('.btn, a');
 
-        // Desktop animation
-        // Set initial states for all buttons
+        // Set initial states for all buttons (ensure no y transform)
         buttons.forEach(btn => {
-          gsap.set(btn, { opacity: 0, scale: 0.1 });
+          gsap.set(btn, { opacity: 0, scale: 0.1, y: 0 });
         });
 
-        // Convert to array and sort by horizontal position (left to right)
+        // Sort buttons based on layout (horizontal on desktop, vertical on mobile)
         const sortedButtons = Array.from(buttons).sort((a, b) => {
           const rectA = a.getBoundingClientRect();
           const rectB = b.getBoundingClientRect();
+          
+          // On mobile/narrow screens, sort vertically (top to bottom)
+          if (isMobile || window.innerWidth <= 768) {
+            return rectA.top - rectB.top;
+          }
+          // On desktop, sort horizontally (left to right)  
           return rectA.left - rectB.left;
         });
 
-        // Animate buttons with stagger from left to right
+        // Animate buttons with stagger and scale-in effect (no y animation)
         gsap.to(sortedButtons, {
           opacity: 1,
           scale: 1,
-          duration: 0.25, // Slower desktop animation
-          ease: 'power2.out',
-          stagger: 0.08 // Slightly longer stagger
+          y: 0, // Explicitly keep y at 0
+          duration: 0.3, // Slightly longer for more pronounced effect
+          ease: 'back.out(1.2)', // Bouncy scale-in effect
+          stagger: 0.1, // Slightly longer stagger for mobile visibility
+          delay: (isMobile || window.innerWidth <= 768) ? 0.6 : 0.1 // Extra delay on mobile
         });
 
         // Make the container visible
