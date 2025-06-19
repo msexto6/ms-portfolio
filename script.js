@@ -1,32 +1,13 @@
-// ================= RESET ANIMATION TRACKING =================
-function resetAnimationTracking() {
-  if (isMobileDevice()) return;
-
-  if (locoScroll && locoScroll.scroll && locoScroll.scroll.instance) {
-    const scrollY = locoScroll.scroll.instance.scroll.y;
-    if (scrollY < 50) {
-      animatedElements.clear();
-      console.log('🔄 Animation tracking reset');
-    }
-  }
-}
-
 // ================= GLOBAL VARIABLES =================
-let locoScroll;
 let isMenuOpen = false;
 let animatedElements = new Set();
 let mobileFooterAnimated = false;
 let resizeTimeout;
-let isFloatingButtonVisible = false; // Track button state to prevent constant animations
+let isFloatingButtonVisible = false;
+let scrollTimeout;
 
 // ================= INITIALIZATION =================
-// Fix timing issue: call init immediately if DOM already loaded
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', init);
-} else {
-  // DOM already loaded, call init immediately
-  init();
-}
+document.addEventListener('DOMContentLoaded', init);
 window.addEventListener('beforeunload', cleanup);
 
 // ================= INIT FUNCTION =================
@@ -43,7 +24,6 @@ function init() {
   setupMobileVideo();
   initGSAPAnimations();
   setupInitialStates();
-  initLocomotiveScroll();
   initMagneticNavDot();
   initSlideMagneticNavDot();
   addNavMagneticEffects();
@@ -51,13 +31,12 @@ function init() {
   initPortfolioFilter();
   addEventListeners();
 
-  // Force an initial "check visibility" for fade-ins (desktop + mobile)
+  // Force an initial "check visibility" for fade-ins
   forceCheckVisible();
 }
 
 // ================= CLEANUP =================
 function cleanup() {
-  if (locoScroll) locoScroll.destroy();
   if (typeof ScrollTrigger !== 'undefined') {
     ScrollTrigger.getAll().forEach(trigger => trigger.kill());
     ScrollTrigger.clearScrollMemory();
@@ -109,19 +88,13 @@ function handlePageLoader() {
 
 // ================= DISABLE PINCH-ZOOM =================
 function disablePinchZoom() {
-  // Only prevent multi-touch pinch, allow single-touch scroll
   document.addEventListener(
     'touchmove',
     function (e) {
-      // Only prevent if it's a pinch gesture (2+ fingers)
-      if (e.touches && e.touches.length > 1) {
-        e.preventDefault();
-      }
-      // Allow single-touch scrolling by not preventing single touches
+      if (e.touches && e.touches.length > 1) e.preventDefault();
     },
     { passive: false }
   );
-  
   document.addEventListener('gesturestart', function (e) {
     e.preventDefault();
   });
@@ -131,13 +104,6 @@ function disablePinchZoom() {
 function setupMobileVideo() {
   const video = document.querySelector('.background-video');
   if (!video) return;
-
-  video.addEventListener('canplaythrough', () => {
-    if (locoScroll) {
-      locoScroll.update();
-      console.log('🎬 Locomotive Scroll updated after video canplaythrough');
-    }
-  });
 
   if (isMobileDevice()) {
     video.addEventListener('loadeddata', () => {
@@ -188,70 +154,31 @@ function setupInitialStates() {
       if (isMobileDevice() || window.innerWidth <= 768) {
         console.log('Setting up footer title for mobile/narrow viewport - keeping visible:', el);
         gsap.set(el, { opacity: 1, y: 0 });
-      } else if (el.classList.contains('resume-section')) {
-        console.log('🔵 Animating resume section with button scale-in effect');
-
-        // Kill any existing animations
-        gsap.killTweensOf(el);
-
-        const resumeButton = el.querySelector('.resume-download-btn');
-        if (resumeButton) {
-          // Set initial state for button - start scaled down like dropdown
-          gsap.set(resumeButton, { opacity: 0, scale: 0.1 });
-          
-          // Animate button scale-in like the dropdown
-          gsap.to(resumeButton, {
-            opacity: 1,
-            scale: 1,
-            duration: 0.4,
-            ease: 'back.out(1.7)', // Same bouncy effect as dropdown
-            delay: 0.1, // Small delay like dropdown
-          });
-        }
-        
-        // Animate the text content normally
-        const textContent = el.querySelector('p');
-        if (textContent) {
-          gsap.fromTo(
-            textContent,
-            { opacity: 0, y: 20 },
-            {
-              opacity: 1,
-              y: 0,
-              duration: 0.4,
-              ease: 'power2.out',
-            }
-          );
-        }
-        
-        // Make sure container is visible
-        gsap.set(el, { opacity: 1 });
-
       } else {
         console.log('Setting up footer title for desktop - hiding for animation:', el);
         gsap.set(el, { opacity: 0, y: 40 });
       }
     } else if (el.classList.contains('sort-container')) {
-    // Special handling for sort container - hide dropdown for pop-in effect
-    console.log('Setting up sort container for pop-in animation:', el);
-    gsap.set(el, { opacity: 1 });
-    
-    const dropdown = el.querySelector('.sort-dropdown');
-    if (dropdown) {
-    gsap.set(dropdown, { opacity: 0, scale: 0.1 });
-    console.log('Dropdown set to scale 0.1 for pop-in effect');
-    }
+      // Special handling for sort container - hide dropdown for pop-in effect
+      console.log('Setting up sort container for pop-in animation:', el);
+      gsap.set(el, { opacity: 1 });
+      
+      const dropdown = el.querySelector('.sort-dropdown');
+      if (dropdown) {
+        gsap.set(dropdown, { opacity: 0, scale: 0.1 });
+        console.log('Dropdown set to scale 0.1 for pop-in effect');
+      }
     } else if (el.classList.contains('resume-section')) {
-        // Special handling for resume section - hide button for scale-in effect
-        console.log('Setting up resume section for scale-in animation:', el);
-        gsap.set(el, { opacity: 1 });
-        
-        const resumeButton = el.querySelector('.resume-download-btn');
-        if (resumeButton) {
-          gsap.set(resumeButton, { opacity: 0, scale: 0.1 });
-          console.log('Resume button set to scale 0.1 for scale-in effect');
-        }
-      } else {
+      // Special handling for resume section - hide button for scale-in effect
+      console.log('Setting up resume section for scale-in animation:', el);
+      gsap.set(el, { opacity: 1 });
+      
+      const resumeButton = el.querySelector('.resume-download-btn');
+      if (resumeButton) {
+        gsap.set(resumeButton, { opacity: 0, scale: 0.1 });
+        console.log('Resume button set to scale 0.1 for scale-in effect');
+      }
+    } else {
       console.log('Setting up regular fade element:', el);
       gsap.set(el, { opacity: 0, y: 40 }); // More pronounced initial offset
     }
@@ -259,7 +186,7 @@ function setupInitialStates() {
 
   const floatingBtn = document.querySelector('.floating-menu-btn');
   if (floatingBtn) {
-    // Move floating button to body to avoid Locomotive Scroll conflicts
+    // Move floating button to body to avoid positioning conflicts
     if (floatingBtn.parentElement !== document.body) {
       document.body.appendChild(floatingBtn);
       console.log('Moved floating button to body during setup');
@@ -296,208 +223,39 @@ function setupInitialStates() {
   console.log('⚙️ Initial states set');
 }
 
-// ================= LOCOMOTIVE SCROLL SETUP =================
-function initLocomotiveScroll() {
-  const isMobile = isMobileDevice();
-  console.log('🔍 Mobile detection:', isMobile, '| UserAgent:', navigator.userAgent, '| Platform:', navigator.platform, '| Touch points:', navigator.maxTouchPoints, '| Window width:', window.innerWidth);
-  
-  locoScroll = new LocomotiveScroll({
-    el: document.querySelector('[data-scroll-container]'),
-    smooth: !isMobile,  // Disable smooth scrolling on mobile
-    multiplier: isMobile ? 1.0 : 0.8,  // Native speed on mobile
-    class: 'is-revealed',
-    smartphone: {
-      smooth: false,  // Force native scrolling
-      multiplier: 1.0,
-    },
-    tablet: {
-      smooth: false,  // Force native scrolling  
-      multiplier: 1.0,
-    },
-    lerp: 0.1,
-    reloadOnContextChange: true,
-  });
+// ================= NATIVE SCROLL EVENT HANDLER =================
+function handleScroll() {
+  const scrollY = window.pageYOffset || document.documentElement.scrollTop;
 
-  locoScroll.on('scroll', (args) => {
-    const scrollY = args.scroll.y;
+  // Add parallax effect to video background
+  updateVideoParallax(scrollY);
 
-    if (isMobileDevice()) {
-      if (!window.mobileScrollThrottle) {
-        window.mobileScrollThrottle = true;
-        setTimeout(() => {
-          checkElementsInView();
-          updateFloatingButton(scrollY);
-          updateScrollIndicator(scrollY);
-          window.mobileScrollThrottle = false;
-        }, 16);
-      }
-    } else {
-      checkElementsInView();
-      updateFloatingButton(scrollY);
-      updateScrollIndicator(scrollY);
-    }
-
-    if (args.scroll.y < 50 && !isMobileDevice()) {
-      document
-        .querySelectorAll('.hero .fade-in')
-        .forEach((el) => animatedElements.delete(el));
-    }
-  });
-  
-  // Add native scroll listener for mobile when smooth scrolling is disabled
-  if (isMobile) {
-    // Add CSS to override any locomotive scroll styles
-    const mobileCSS = `
-      @media (hover: none) and (pointer: coarse) {
-        [data-scroll-container] {
-          overflow: visible !important;
-          height: auto !important;
-          position: static !important;
-          transform: none !important;
-          will-change: auto !important;
-        }
-        
-        body, html {
-          overflow: auto !important;
-          height: auto !important;
-          position: static !important;
-        }
-        
-        .has-scroll-smooth,
-        .has-scroll-init {
-          overflow: visible !important;
-        }
-      }
-    `;
-    
-    const styleElement = document.createElement('style');
-    styleElement.textContent = mobileCSS;
-    document.head.appendChild(styleElement);
-    console.log('📱 Mobile: Added CSS overrides');
-    
-    // Aggressively reset all styles that could block scrolling
-    const resetMobileScrolling = () => {
-      const scrollContainer = document.querySelector('[data-scroll-container]');
-      if (scrollContainer) {
-        scrollContainer.style.overflow = 'visible !important';
-        scrollContainer.style.height = 'auto !important';
-        scrollContainer.style.position = 'static !important';
-        scrollContainer.style.transform = 'none !important';
-        scrollContainer.style.willChange = 'auto !important';
-        scrollContainer.style.backfaceVisibility = 'visible !important';
-        console.log('📱 Mobile: Aggressively reset scroll container');
-      }
-      
-      // Reset body and html
-      document.body.style.overflow = 'auto !important';
-      document.body.style.height = 'auto !important';
-      document.body.style.position = 'static !important';
-      document.documentElement.style.overflow = 'auto !important';
-      document.documentElement.style.height = 'auto !important';
-      
-      // Remove any locomotive scroll classes that might interfere
-      document.body.classList.remove('has-scroll-smooth', 'has-scroll-init');
-      
-      console.log('📱 Mobile: Aggressively reset body/html styles');
-    };
-    
-    // Reset immediately and after a delay
-    resetMobileScrolling();
-    setTimeout(resetMobileScrolling, 100);
-    setTimeout(resetMobileScrolling, 500);
-    
-    // Create enhanced scroll handler
-    let scrollTimeout;
-    const handleNativeScroll = () => {
-      const scrollY = window.pageYOffset || document.documentElement.scrollTop;
-      console.log('📱 Native scroll detected:', scrollY);
-      
-      // Clear existing timeout
-      if (scrollTimeout) {
-        clearTimeout(scrollTimeout);
-      }
-      
-      // Immediate call for responsiveness
-      try {
+  // Throttle scroll events on mobile for performance
+  if (isMobileDevice()) {
+    if (!scrollTimeout) {
+      scrollTimeout = setTimeout(() => {
         checkElementsInView();
         updateFloatingButton(scrollY);
         updateScrollIndicator(scrollY);
-      } catch (e) {
-        console.error('🚨 Mobile scroll handler error:', e);
-      }
-      
-      // Also call after scroll settles
-      scrollTimeout = setTimeout(() => {
-        try {
-          checkElementsInView();
-          updateFloatingButton(scrollY);
-          updateScrollIndicator(scrollY);
-          console.log('📱 Native scroll settled:', scrollY);
-        } catch (e) {
-          console.error('🚨 Mobile scroll settled error:', e);
-        }
-      }, 100);
-    };
-    
-    // Add multiple scroll listeners for maximum compatibility
-    window.addEventListener('scroll', handleNativeScroll, { passive: true });
-    document.addEventListener('scroll', handleNativeScroll, { passive: true });
-    
-    // Touch events for iOS
-    window.addEventListener('touchstart', () => {
-      setTimeout(handleNativeScroll, 10);
-    }, { passive: true });
-    
-    window.addEventListener('touchmove', () => {
-      setTimeout(handleNativeScroll, 10);
-    }, { passive: true });
-    
-    window.addEventListener('touchend', () => {
-      setTimeout(handleNativeScroll, 50);
-      setTimeout(handleNativeScroll, 200);
-    }, { passive: true });
-    
-    console.log('📱 Mobile: Enhanced native scroll listeners added');
-    
-    // Force initial animation checks
-    setTimeout(() => {
-      console.log('📱 Mobile: Forcing initial animation check (500ms)');
-      checkElementsInView();
-    }, 500);
-    
-    setTimeout(() => {
-      console.log('📱 Mobile: Forcing second animation check (1000ms)');
-      checkElementsInView();
-    }, 1000);
+        scrollTimeout = null;
+      }, 16); // ~60fps
+    }
+  } else {
+    checkElementsInView();
+    updateFloatingButton(scrollY);
+    updateScrollIndicator(scrollY);
   }
 
-  if (typeof ScrollTrigger !== 'undefined' && locoScroll && !isMobile) {
-    // Only setup ScrollTrigger on desktop where smooth scrolling is enabled
-    locoScroll.on('scroll', ScrollTrigger.update);
-    ScrollTrigger.scrollerProxy('[data-scroll-container]', {
-      scrollTop(value) {
-        return arguments.length ? locoScroll.scrollTo(value, 0, 0) : locoScroll.scroll.instance.scroll.y;
-      },
-      getBoundingClientRect() {
-        return { top: 0, left: 0, width: window.innerWidth, height: window.innerHeight };
-      },
-      pinType: document.querySelector('[data-scroll-container]').style.transform ? 'transform' : 'fixed'
-    });
-    ScrollTrigger.refresh();
+  // Reset animation tracking when scrolled to top
+  if (scrollY < 50 && !isMobileDevice()) {
+    document
+      .querySelectorAll('.hero .fade-in')
+      .forEach((el) => animatedElements.delete(el));
   }
-
-  console.log('🌀 Locomotive Scroll initialized - Smooth scrolling:', !isMobile ? 'ENABLED (Desktop)' : 'DISABLED (Mobile - using native)');
 }
 
 // ================= FADE-IN ON SCROLL (GSAP) =================
 function checkElementsInView() {
-  // DEBUGGING: Prevent recursive calls
-  if (window.checkingElements) {
-    console.warn('🚫 checkElementsInView() called recursively - preventing stack overflow');
-    return;
-  }
-  window.checkingElements = true;
-  
   const windowHeight = window.innerHeight;
   const isMobile = isMobileDevice();
 
@@ -553,6 +311,7 @@ function checkElementsInView() {
     if (isOutOfView && animatedElements.has(el)) {
       if (!(isMobile && (el.classList.contains('footer-title') || el.closest('.footer')))) {
         animatedElements.delete(el);
+        console.log(`Element ${el.className} removed from animated set - can animate again`);
 
         // Reset footer buttons to hidden state when they go out of view
         if (el.classList.contains('footer-contact')) {
@@ -582,64 +341,41 @@ function checkElementsInView() {
       if (el.classList.contains('footer-contact')) {
         console.log('🔵 Animating footer-contact container and buttons with pop-in effect');
 
+        // Skip button animations on mobile/narrow viewports - they're already visible via CSS
+        if (isMobile || window.innerWidth <= 768) {
+          // Just mark as animated
+          console.log('Skipping footer button animations on mobile/narrow viewport - using CSS visibility');
+          gsap.set(el, { opacity: 1 });
+          return;
+        }
+
         // Kill any existing animations
         gsap.killTweensOf(el);
 
         // Find all buttons within this container
         const buttons = el.querySelectorAll('.btn, a');
 
-        // Check if we're on mobile/narrow viewport OR actually mobile
-        const isMobileViewport = isMobile || window.innerWidth <= 768;
-        
-        if (isMobileViewport) {
-          // Mobile animation - always animate buttons regardless of previous state
-          console.log('📱 Mobile footer button animation');
-          
-          // Force buttons to start state for animation
-          buttons.forEach(btn => {
-            gsap.set(btn, { opacity: 0, scale: 0.1 });
-          });
-          
-          // Convert to array and sort by horizontal position (left to right)
-          const sortedButtons = Array.from(buttons).sort((a, b) => {
-            const rectA = a.getBoundingClientRect();
-            const rectB = b.getBoundingClientRect();
-            return rectA.left - rectB.left;
-          });
+        // Desktop animation
+        // Set initial states for all buttons
+        buttons.forEach(btn => {
+          gsap.set(btn, { opacity: 0, scale: 0.1 });
+        });
 
-          // Animate buttons with stagger from left to right
-          gsap.to(sortedButtons, {
-            opacity: 1,
-            scale: 1,
-            duration: 0.4, // Slightly longer for mobile
-            ease: 'back.out(1.7)',
-            stagger: 0.1 // More noticeable stagger for mobile
-          });
-        } else {
-          // Desktop animation (original logic)
-          console.log('🖥️ Desktop footer button animation');
-          
-          // Set initial states for all buttons
-          buttons.forEach(btn => {
-            gsap.set(btn, { opacity: 0, scale: 0.1 });
-          });
+        // Convert to array and sort by horizontal position (left to right)
+        const sortedButtons = Array.from(buttons).sort((a, b) => {
+          const rectA = a.getBoundingClientRect();
+          const rectB = b.getBoundingClientRect();
+          return rectA.left - rectB.left;
+        });
 
-          // Convert to array and sort by horizontal position (left to right)
-          const sortedButtons = Array.from(buttons).sort((a, b) => {
-            const rectA = a.getBoundingClientRect();
-            const rectB = b.getBoundingClientRect();
-            return rectA.left - rectB.left;
-          });
-
-          // Animate buttons with stagger from left to right
-          gsap.to(sortedButtons, {
-            opacity: 1,
-            scale: 1,
-            duration: 0.25,
-            ease: 'power2.out',
-            stagger: 0.08
-          });
-        }
+        // Animate buttons with stagger from left to right
+        gsap.to(sortedButtons, {
+          opacity: 1,
+          scale: 1,
+          duration: 0.25, // Slower desktop animation
+          ease: 'power2.out',
+          stagger: 0.08 // Slightly longer stagger
+        });
 
         // Make the container visible
         gsap.set(el, { opacity: 1 });
@@ -756,6 +492,7 @@ function checkElementsInView() {
     if (container) {
       const containerRect = container.getBoundingClientRect();
       const containerHeight = container.offsetHeight;
+      const scrollY = window.pageYOffset || document.documentElement.scrollTop;
 
       // Calculate scroll progress based on container position
       const scrollProgress = Math.max(
@@ -786,9 +523,6 @@ function checkElementsInView() {
       }
     }
   }
-  
-  // DEBUGGING: Reset the flag
-  window.checkingElements = false;
 }
 
 // ================= SCROLL INDICATOR FADE =================
@@ -823,6 +557,22 @@ function updateScrollIndicator(scrollY) {
   } else {
     scrollIndicator.classList.remove('fade-out');
   }
+}
+
+// ================= VIDEO PARALLAX EFFECT =================
+function updateVideoParallax(scrollY) {
+  const video = document.querySelector('.background-video');
+  if (!video) return;
+  
+  // Calculate parallax offset - video moves opposite direction at 30% of scroll speed
+  const parallaxSpeed = 0.3;
+  const yOffset = -(scrollY * parallaxSpeed); // Negative for opposite direction
+  
+  // Apply transform using direct CSS for reliable cross-browser support
+  video.style.transform = `translateY(${yOffset}px)`;
+  
+  // Optional: Add hardware acceleration hint
+  video.style.willChange = 'transform';
 }
 
 // ================= FLOATING BUTTON SHOW/HIDE =================
@@ -1224,12 +974,9 @@ function closeSlideMenu() {
     duration: 0.4,
     ease: 'power2.in',
     onComplete: () => {
-      if (locoScroll) {
-        locoScroll.update();
-        // Force a scroll update to check floating button state
-        const currentScroll = locoScroll.scroll.instance.scroll.y;
-        updateFloatingButton(currentScroll);
-      }
+      // Force a scroll update to check floating button state
+      const currentScroll = window.pageYOffset || document.documentElement.scrollTop;
+      updateFloatingButton(currentScroll);
     },
   });
 }
@@ -1255,132 +1002,19 @@ function addEventListeners() {
     closeBtn.addEventListener('click', closeSlideMenu);
   }
 
+  // Add native scroll event listener
+  window.addEventListener('scroll', handleScroll, { passive: true });
+
   const handleResize = () => {
     clearTimeout(resizeTimeout);
     resizeTimeout = setTimeout(() => {
-      if (locoScroll) {
-        locoScroll.update();
-        console.log('🔄 Locomotive Scroll updated on resize');
-        if (!isMobileDevice()) checkElementsInView();
-      }
       if (typeof ScrollTrigger !== 'undefined') {
         ScrollTrigger.refresh(true);
       }
+      if (!isMobileDevice()) checkElementsInView();
     }, 250);
   };
   window.addEventListener('resize', handleResize);
-
-  // Fix for scroll freeze when returning from external apps (like email)
-  const handleVisibilityChange = () => {
-    if (!document.hidden && locoScroll) {
-      // Page became visible again - completely reinitialize scroll
-      setTimeout(() => {
-        console.log('🔄 Reinitializing Locomotive Scroll after visibility change');
-        
-        // Destroy existing instance
-        locoScroll.destroy();
-        
-        // Recreate scroll instance with same mobile logic
-        const isMobile = isMobileDevice();
-        locoScroll = new LocomotiveScroll({
-          el: document.querySelector('[data-scroll-container]'),
-          smooth: !isMobile,  // Disable smooth scrolling on mobile
-          multiplier: isMobile ? 1.0 : 0.8,  // Native speed on mobile
-          class: 'is-revealed',
-          smartphone: {
-            smooth: false,  // Force native scrolling
-            multiplier: 1.0,
-          },
-          tablet: {
-            smooth: false,  // Force native scrolling
-            multiplier: 1.0,
-          },
-          lerp: 0.1,
-          reloadOnContextChange: true,
-        });
-        
-        // Re-setup scroll events
-        locoScroll.on('scroll', (args) => {
-          const scrollY = args.scroll.y;
-          if (isMobileDevice()) {
-            if (!window.mobileScrollThrottle) {
-              window.mobileScrollThrottle = true;
-              setTimeout(() => {
-                checkElementsInView();
-                updateFloatingButton(scrollY);
-                window.mobileScrollThrottle = false;
-              }, 16);
-            }
-          } else {
-            checkElementsInView();
-            updateFloatingButton(scrollY);
-          }
-        });
-        
-        // Re-setup ScrollTrigger if available
-        if (typeof ScrollTrigger !== 'undefined') {
-          locoScroll.on('scroll', ScrollTrigger.update);
-          ScrollTrigger.scrollerProxy('[data-scroll-container]', {
-            scrollTop(value) {
-              return arguments.length ? locoScroll.scrollTo(value, 0, 0) : locoScroll.scroll.instance.scroll.y;
-            },
-            getBoundingClientRect() {
-              return { top: 0, left: 0, width: window.innerWidth, height: window.innerHeight };
-            },
-            pinType: document.querySelector('[data-scroll-container]').style.transform ? 'transform' : 'fixed'
-          });
-          ScrollTrigger.refresh();
-        }
-        
-        // Refresh everything
-        checkElementsInView();
-        const currentScroll = locoScroll.scroll.instance.scroll.y;
-        updateFloatingButton(currentScroll);
-        
-        console.log('✅ Locomotive Scroll completely reinitialized');
-      }, 150);
-    }
-  };
-  document.addEventListener('visibilitychange', handleVisibilityChange);
-
-  // Additional fix for focus events
-  const handleFocus = () => {
-    if (locoScroll) {
-      setTimeout(() => {
-        locoScroll.update();
-        locoScroll.start();
-        console.log('🔄 Locomotive Scroll restarted on focus');
-      }, 200);
-    }
-  };
-  window.addEventListener('focus', handleFocus);
-
-  // Chrome-specific fix for page show event
-  const handlePageShow = (e) => {
-    if (locoScroll) {
-      setTimeout(() => {
-        locoScroll.update();
-        locoScroll.start();
-        console.log('🔄 Locomotive Scroll restarted on page show');
-      }, 300);
-    }
-  };
-  window.addEventListener('pageshow', handlePageShow);
-
-  // Additional Chrome fix - listen for document becoming visible
-  let lastActiveTime = Date.now();
-  const handleDocumentClick = () => {
-    const now = Date.now();
-    // If it's been more than 2 seconds since last activity, refresh scroll
-    if (now - lastActiveTime > 2000 && locoScroll) {
-      locoScroll.update();
-      locoScroll.start();
-      console.log('🔄 Locomotive Scroll refreshed after inactivity');
-    }
-    lastActiveTime = now;
-  };
-  document.addEventListener('click', handleDocumentClick);
-  document.addEventListener('touchstart', handleDocumentClick);
 
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && isMenuOpen) closeSlideMenu();
@@ -1394,16 +1028,12 @@ function forceCheckVisible() {
   // Immediate check
   setTimeout(() => {
     checkElementsInView();
-    if (locoScroll) locoScroll.update();
     console.log('🔄 Forced check #1');
   }, 100);
-  
-  // No need to force footer buttons on mobile - handled by CSS
 
   // Secondary check after layout settles
   setTimeout(() => {
     checkElementsInView();
-    if (locoScroll) locoScroll.update();
     console.log('🔄 Forced check #2');
   }, 500);
 
@@ -1439,15 +1069,10 @@ function forceCheckVisible() {
       }
     });
 
-    if (locoScroll) locoScroll.update();
     console.log('🔄 Forced check #3 - Force animate visible elements');
   }, 1000);
 
-  // Final update
-  setTimeout(() => {
-    if (locoScroll) locoScroll.update();
-    console.log('🔄 Final Locomotive Scroll update');
-  }, 2000);
+  console.log('⚙️ Force visibility checks complete');
 }
 
 // ================= PORTFOLIO THUMBNAIL ANIMATIONS =================
@@ -1528,14 +1153,6 @@ function initPortfolioFilter() {
         });
       }
     });
-    
-    // Update Locomotive Scroll after filtering
-    if (locoScroll) {
-      setTimeout(() => {
-        locoScroll.update();
-        console.log('🔄 Locomotive Scroll updated after filtering');
-      }, 350);
-    }
   });
   
   console.log('🔍 Portfolio filter initialized');
@@ -1543,42 +1160,9 @@ function initPortfolioFilter() {
 
 // ================= HELPER: IS MOBILE =================
 function isMobileDevice() {
-  // More comprehensive mobile detection - don't just rely on screen width
-  const userAgent = navigator.userAgent.toLowerCase();
-  const isMobileUA = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(userAgent);
-  
-  // Only consider small screen if it's also a touch device
-  const isSmallScreen = window.innerWidth <= 768;
-  const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-  const isSmallTouchDevice = isSmallScreen && isTouchDevice;
-  
-  // Check for iPad specifically (including newer iPads that report as Mac)
-  const isIPad = /ipad/i.test(userAgent) || 
-    (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-  
-  // Additional checks for tablets
-  const isTablet = /tablet|ipad|playbook|silk/i.test(userAgent) ||
-    (navigator.maxTouchPoints > 1 && window.innerWidth > 768);
-  
-  // IMPORTANT: Don't disable Locomotive Scroll just because viewport is narrow
-  // Only disable if it's actually a mobile/touch device
-  const result = isMobileUA || isSmallTouchDevice || isIPad || isTablet;
-  
-  // Debug logging
-  console.log('🔍 Mobile Detection Debug:', {
-    userAgent,
-    isMobileUA,
-    isSmallScreen,
-    isTouchDevice,
-    isSmallTouchDevice,
-    isIPad,
-    isTablet,
-    finalResult: result,
-    windowSize: `${window.innerWidth}x${window.innerHeight}`,
-    platform: navigator.platform,
-    touchPoints: navigator.maxTouchPoints,
-    reasoning: result ? 'MOBILE/TOUCH DEVICE' : 'DESKTOP (keeping Locomotive Scroll)'
-  });
-  
-  return result;
+  return (
+    /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+      navigator.userAgent
+    ) || window.innerWidth <= 768
+  );
 }
