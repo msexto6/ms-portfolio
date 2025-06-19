@@ -1131,10 +1131,12 @@ function addEventListeners() {
           smartphone: {
             smooth: true,
             multiplier: 2.0,
+            lerp: 0.35,
           },
           tablet: {
             smooth: true,
             multiplier: 2.0,
+            lerp: 0.35,
           },
           lerp: 0.1,
           reloadOnContextChange: true,
