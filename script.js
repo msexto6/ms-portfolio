@@ -20,7 +20,13 @@ let resizeTimeout;
 let isFloatingButtonVisible = false; // Track button state to prevent constant animations
 
 // ================= INITIALIZATION =================
-document.addEventListener('DOMContentLoaded', init);
+// Fix timing issue: call init immediately if DOM already loaded
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', init);
+} else {
+  // DOM already loaded, call init immediately
+  init();
+}
 window.addEventListener('beforeunload', cleanup);
 
 // ================= INIT FUNCTION =================
@@ -348,6 +354,13 @@ function initLocomotiveScroll() {
 
 // ================= FADE-IN ON SCROLL (GSAP) =================
 function checkElementsInView() {
+  // DEBUGGING: Prevent recursive calls
+  if (window.checkingElements) {
+    console.warn('🚫 checkElementsInView() called recursively - preventing stack overflow');
+    return;
+  }
+  window.checkingElements = true;
+  
   const windowHeight = window.innerHeight;
   const isMobile = isMobileDevice();
 
@@ -399,13 +412,10 @@ function checkElementsInView() {
     const isInView = rect.top < threshold && rect.bottom > 0;
     const isOutOfView = rect.bottom < 0 || rect.top > windowHeight;
 
-    console.log(`Element: ${el.className}, Top: ${rect.top}, Bottom: ${rect.bottom}, Threshold: ${threshold}, In View: ${isInView}`);
-
     // Remove from animated set if element goes out of view (to allow re-animation) - but not on mobile for footer
     if (isOutOfView && animatedElements.has(el)) {
       if (!(isMobile && (el.classList.contains('footer-title') || el.closest('.footer')))) {
         animatedElements.delete(el);
-        console.log(`Element ${el.className} removed from animated set - can animate again`);
 
         // Reset footer buttons to hidden state when they go out of view
         if (el.classList.contains('footer-contact')) {
@@ -616,6 +626,9 @@ function checkElementsInView() {
       }
     }
   }
+  
+  // DEBUGGING: Reset the flag
+  window.checkingElements = false;
 }
 
 // ================= SCROLL INDICATOR FADE =================
