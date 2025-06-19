@@ -582,41 +582,64 @@ function checkElementsInView() {
       if (el.classList.contains('footer-contact')) {
         console.log('🔵 Animating footer-contact container and buttons with pop-in effect');
 
-        // Skip button animations on mobile/narrow viewports - they're already visible via CSS
-        if (isMobile || window.innerWidth <= 768) {
-          // Just mark as animated
-          console.log('Skipping footer button animations on mobile/narrow viewport - using CSS visibility');
-          gsap.set(el, { opacity: 1 });
-          return;
-        }
-
         // Kill any existing animations
         gsap.killTweensOf(el);
 
         // Find all buttons within this container
         const buttons = el.querySelectorAll('.btn, a');
 
-        // Desktop animation
-        // Set initial states for all buttons
-        buttons.forEach(btn => {
-          gsap.set(btn, { opacity: 0, scale: 0.1 });
-        });
+        // Check if we're on mobile/narrow viewport OR actually mobile
+        const isMobileViewport = isMobile || window.innerWidth <= 768;
+        
+        if (isMobileViewport) {
+          // Mobile animation - always animate buttons regardless of previous state
+          console.log('📱 Mobile footer button animation');
+          
+          // Force buttons to start state for animation
+          buttons.forEach(btn => {
+            gsap.set(btn, { opacity: 0, scale: 0.1 });
+          });
+          
+          // Convert to array and sort by horizontal position (left to right)
+          const sortedButtons = Array.from(buttons).sort((a, b) => {
+            const rectA = a.getBoundingClientRect();
+            const rectB = b.getBoundingClientRect();
+            return rectA.left - rectB.left;
+          });
 
-        // Convert to array and sort by horizontal position (left to right)
-        const sortedButtons = Array.from(buttons).sort((a, b) => {
-          const rectA = a.getBoundingClientRect();
-          const rectB = b.getBoundingClientRect();
-          return rectA.left - rectB.left;
-        });
+          // Animate buttons with stagger from left to right
+          gsap.to(sortedButtons, {
+            opacity: 1,
+            scale: 1,
+            duration: 0.4, // Slightly longer for mobile
+            ease: 'back.out(1.7)',
+            stagger: 0.1 // More noticeable stagger for mobile
+          });
+        } else {
+          // Desktop animation (original logic)
+          console.log('🖥️ Desktop footer button animation');
+          
+          // Set initial states for all buttons
+          buttons.forEach(btn => {
+            gsap.set(btn, { opacity: 0, scale: 0.1 });
+          });
 
-        // Animate buttons with stagger from left to right
-        gsap.to(sortedButtons, {
-          opacity: 1,
-          scale: 1,
-          duration: 0.25, // Slower desktop animation
-          ease: 'power2.out',
-          stagger: 0.08 // Slightly longer stagger
-        });
+          // Convert to array and sort by horizontal position (left to right)
+          const sortedButtons = Array.from(buttons).sort((a, b) => {
+            const rectA = a.getBoundingClientRect();
+            const rectB = b.getBoundingClientRect();
+            return rectA.left - rectB.left;
+          });
+
+          // Animate buttons with stagger from left to right
+          gsap.to(sortedButtons, {
+            opacity: 1,
+            scale: 1,
+            duration: 0.25,
+            ease: 'power2.out',
+            stagger: 0.08
+          });
+        }
 
         // Make the container visible
         gsap.set(el, { opacity: 1 });
@@ -1520,11 +1543,14 @@ function initPortfolioFilter() {
 
 // ================= HELPER: IS MOBILE =================
 function isMobileDevice() {
-  // More comprehensive mobile detection
+  // More comprehensive mobile detection - don't just rely on screen width
   const userAgent = navigator.userAgent.toLowerCase();
   const isMobileUA = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(userAgent);
+  
+  // Only consider small screen if it's also a touch device
   const isSmallScreen = window.innerWidth <= 768;
   const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+  const isSmallTouchDevice = isSmallScreen && isTouchDevice;
   
   // Check for iPad specifically (including newer iPads that report as Mac)
   const isIPad = /ipad/i.test(userAgent) || 
@@ -1534,7 +1560,9 @@ function isMobileDevice() {
   const isTablet = /tablet|ipad|playbook|silk/i.test(userAgent) ||
     (navigator.maxTouchPoints > 1 && window.innerWidth > 768);
   
-  const result = isMobileUA || isSmallScreen || isTouchDevice || isIPad || isTablet;
+  // IMPORTANT: Don't disable Locomotive Scroll just because viewport is narrow
+  // Only disable if it's actually a mobile/touch device
+  const result = isMobileUA || isSmallTouchDevice || isIPad || isTablet;
   
   // Debug logging
   console.log('🔍 Mobile Detection Debug:', {
@@ -1542,12 +1570,14 @@ function isMobileDevice() {
     isMobileUA,
     isSmallScreen,
     isTouchDevice,
+    isSmallTouchDevice,
     isIPad,
     isTablet,
     finalResult: result,
     windowSize: `${window.innerWidth}x${window.innerHeight}`,
     platform: navigator.platform,
-    touchPoints: navigator.maxTouchPoints
+    touchPoints: navigator.maxTouchPoints,
+    reasoning: result ? 'MOBILE/TOUCH DEVICE' : 'DESKTOP (keeping Locomotive Scroll)'
   });
   
   return result;
