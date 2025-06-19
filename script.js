@@ -292,20 +292,20 @@ function setupInitialStates() {
 
 // ================= LOCOMOTIVE SCROLL SETUP =================
 function initLocomotiveScroll() {
+  const isMobile = isMobileDevice();
+  
   locoScroll = new LocomotiveScroll({
     el: document.querySelector('[data-scroll-container]'),
-    smooth: true,
-    multiplier: 0.8,
+    smooth: !isMobile,  // Disable smooth scrolling on mobile
+    multiplier: isMobile ? 1.0 : 0.8,  // Native speed on mobile
     class: 'is-revealed',
     smartphone: {
-      smooth: true,
-      multiplier: 2.0,
-      lerp: 0.35,
+      smooth: false,  // Force native scrolling
+      multiplier: 1.0,
     },
     tablet: {
-      smooth: true,
-      multiplier: 2.0,
-      lerp: 0.35,
+      smooth: false,  // Force native scrolling  
+      multiplier: 1.0,
     },
     lerp: 0.1,
     reloadOnContextChange: true,
@@ -1122,21 +1122,20 @@ function addEventListeners() {
         // Destroy existing instance
         locoScroll.destroy();
         
-        // Recreate scroll instance
+        // Recreate scroll instance with same mobile logic
+        const isMobile = isMobileDevice();
         locoScroll = new LocomotiveScroll({
           el: document.querySelector('[data-scroll-container]'),
-          smooth: true,
-          multiplier: 0.8,
+          smooth: !isMobile,  // Disable smooth scrolling on mobile
+          multiplier: isMobile ? 1.0 : 0.8,  // Native speed on mobile
           class: 'is-revealed',
           smartphone: {
-            smooth: true,
-            multiplier: 2.0,
-            lerp: 0.35,
+            smooth: false,  // Force native scrolling
+            multiplier: 1.0,
           },
           tablet: {
-            smooth: true,
-            multiplier: 2.0,
-            lerp: 0.35,
+            smooth: false,  // Force native scrolling
+            multiplier: 1.0,
           },
           lerp: 0.1,
           reloadOnContextChange: true,
