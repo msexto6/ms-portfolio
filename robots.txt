@@ -1,0 +1,12 @@
+User-agent: *
+Allow: /
+
+# Sitemap location
+Sitemap: https://msextoncreative.com/sitemap.xml
+
+# Allow all pages for legitimate crawlers
+Allow: /pages/
+Allow: /public/
+
+# Business-focused content for proper categorization
+# Professional portfolio and business services
