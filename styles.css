@@ -133,6 +133,24 @@ html {
   box-sizing: inherit;
 }
 
+/* ScrollSmoother Setup */
+#smooth-wrapper {
+  width: 100%;
+  overflow: hidden;
+  position: relative;
+}
+
+#smooth-content {
+  overflow: visible;
+  width: 100%;
+  position: relative;
+}
+
+/* Ensure all content is contained within smooth-content */
+#smooth-content > div {
+  position: relative;
+}
+
 /* Fallback for no JavaScript */
 html.no-js .fade-in {
   opacity: 1;
@@ -426,7 +444,7 @@ p {
   width: 98vw;
   max-width: 98vw;
   height: auto;
-  z-index: 1;
+  z-index: 0;
   pointer-events: none;
   will-change: transform;
 }
@@ -690,11 +708,13 @@ p {
   display: inline-block;
   line-height: 1.2;
   font-weight: 300;
+  position: relative;
+  overflow: hidden;
 }
 
 .btn-outline {
   padding: 0.7rem 2.2rem;
-  border: 1px solid var(--text-light);
+  border: 0.5px solid var(--text-light);
   color: var(--text-light);
   background: transparent;
   border-radius: 50px;
@@ -1815,4 +1835,49 @@ p {
   .placeholder-text {
     font-size: 0.9rem;
   }
+}
+
+/* Circular Wipe Effect Styles */
+.circular-wipe-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  clip-path: circle(0% at 50% 50%);
+  pointer-events: none;
+  z-index: 2;
+  border-radius: inherit; /* Inherit button's border-radius for smooth edges */
+}
+
+/* Purple button → Much darker purple wipe */
+.btn-primary .circular-wipe-overlay {
+  background: #1a0080; /* Much darker purple */
+  color: var(--text-light);
+  border-radius: 50%; /* Ensure smooth circular edges */
+  box-sizing: border-box;
+}
+
+/* Black/White buttons → Dark charcoal grey wipe with white text */
+.btn-outline .circular-wipe-overlay {
+  background: #333333; /* 80% black - dark charcoal grey */
+  color: var(--text-light);
+}
+
+/* Ensure overlay text is specifically white */
+.btn-outline .btn-text-overlay {
+  color: var(--text-light) !important;
+}
+
+.btn-text {
+  position: relative;
+  z-index: 1;
+}
+
+.btn-text-overlay {
+  position: relative;
+  z-index: 3;
 }

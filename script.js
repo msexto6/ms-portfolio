@@ -24,10 +24,12 @@ function init() {
   setupMobileVideo();
   initGSAPAnimations();
   setupInitialStates();
+  initScrollSmoother();
   initMagneticNavDot();
   initSlideMagneticNavDot();
   addNavMagneticEffects();
   initMagneticButtons();
+  initCircularWipeEffect();
   initPortfolioFilter();
   addEventListeners();
 
@@ -117,11 +119,67 @@ function setupMobileVideo() {
 function initGSAPAnimations() {
   if (typeof gsap !== 'undefined') {
     gsap.registerPlugin(ScrollTrigger);
+    
+    // Register ScrollSmoother if available
+    if (typeof ScrollSmoother !== 'undefined') {
+      gsap.registerPlugin(ScrollSmoother);
+    }
+    
     gsap.defaults({
       ease: 'power2.out',
       duration: 0.8,
     });
     console.log('🎬 GSAP initialized');
+  }
+}
+
+// ================= SCROLL SMOOTHER SETUP =================
+function initScrollSmoother() {
+  if (typeof ScrollSmoother !== 'undefined') {
+    try {
+      const smoother = ScrollSmoother.create({
+        wrapper: "#smooth-wrapper",
+        content: "#smooth-content",
+        smooth: 2,                    // Reduced smoothing
+        normalizeScroll: true,        // Helps with mobile issues
+        ignoreMobileResize: true,     // Prevents mobile viewport issues
+        effects: false,               // Don't interfere with existing animations
+        smoothTouch: 0.1,            // Subtle touch smoothing for mobile
+        onUpdate: self => {
+          // Trigger our custom scroll handler when ScrollSmoother updates
+          handleScroll();
+          // Ensure content elements maintain normal scroll speed
+          ensureNormalScrollSpeed();
+        }
+      });
+      
+      // Refresh after a short delay to ensure proper height calculation
+      setTimeout(() => {
+        if (smoother && smoother.refresh) {
+          smoother.refresh();
+          const content = document.getElementById('smooth-content');
+          console.log('🔄 ScrollSmoother refreshed');
+          console.log('Content height:', content ? content.offsetHeight + 'px' : 'unknown');
+        }
+      }, 100);
+      
+      // Additional refresh after content settles
+      setTimeout(() => {
+        if (smoother && smoother.refresh) {
+          smoother.refresh();
+          const content = document.getElementById('smooth-content');
+          console.log('🔄 ScrollSmoother final refresh');
+          console.log('Final content height:', content ? content.offsetHeight + 'px' : 'unknown');
+        }
+      }, 500);
+      
+      console.log('✨ ScrollSmoother initialized with smooth: 2');
+      return smoother;
+    } catch (error) {
+      console.warn('ScrollSmoother initialization failed:', error);
+    }
+  } else {
+    console.log('ScrollSmoother not available');
   }
 }
 
@@ -222,7 +280,14 @@ function setupInitialStates() {
 
 // ================= NATIVE SCROLL EVENT HANDLER =================
 function handleScroll() {
-  const scrollY = window.pageYOffset || document.documentElement.scrollTop;
+  // Use ScrollSmoother's scroll position if available, otherwise fall back to native
+  let scrollY;
+  const smoother = ScrollSmoother.get();
+  if (smoother) {
+    scrollY = smoother.scrollTop();
+  } else {
+    scrollY = window.pageYOffset || document.documentElement.scrollTop;
+  }
 
   // Add parallax effect to video background
   updateVideoParallax(scrollY);
@@ -556,20 +621,59 @@ function updateScrollIndicator(scrollY) {
   }
 }
 
-// ================= VIDEO PARALLAX EFFECT =================
+// ================= ENSURE NORMAL SCROLL SPEED =================
+function ensureNormalScrollSpeed() {
+  const pageContent = document.querySelector('.page-content');
+  const footer = document.querySelector('.footer');
+  
+  // Force reset any transforms on content elements to ensure they move at normal speed
+  if (pageContent) {
+    pageContent.style.transform = 'none';
+    pageContent.style.willChange = 'auto';
+  }
+  if (footer) {
+    footer.style.transform = 'none';
+    footer.style.willChange = 'auto';
+  }
+}
+
+// ================= PARALLAX EFFECTS =================
 function updateVideoParallax(scrollY) {
   const video = document.querySelector('.background-video');
+  const heroLogo = document.querySelector('.hero-logo');
+  const pageContent = document.querySelector('.page-content');
+  const footer = document.querySelector('.footer');
+  
   if (!video) return;
   
-  // Calculate parallax offset - video moves opposite direction at 30% of scroll speed
-  const parallaxSpeed = 0.3;
-  const yOffset = -(scrollY * parallaxSpeed); // Negative for opposite direction
+  // Video moves slowest (40% of scroll speed - deep background)
+  // Positive transform so video moves DOWN slower than content
+  const videoParallaxSpeed = 0.4;
+  const videoOffset = scrollY * videoParallaxSpeed;
   
-  // Apply transform using direct CSS for reliable cross-browser support
-  video.style.transform = `translateY(${yOffset}px)`;
-  
-  // Optional: Add hardware acceleration hint
+  // Apply transform to video
+  video.style.transform = `translateY(${videoOffset}px)`;
   video.style.willChange = 'transform';
+  
+  // Hero logo moves at medium speed (60% of scroll speed - middle layer)
+  if (heroLogo) {
+    const logoParallaxSpeed = 0.6;
+    const logoOffset = scrollY * logoParallaxSpeed;
+    
+    heroLogo.style.transform = `translateY(${logoOffset}px)`;
+    heroLogo.style.willChange = 'transform';
+  }
+  
+  // Ensure white content block and footer move together at normal speed (100%)
+  // Reset any transforms that might have been applied by other systems
+  if (pageContent) {
+    pageContent.style.transform = 'none';
+    pageContent.style.willChange = 'auto';
+  }
+  if (footer) {
+    footer.style.transform = 'none';
+    footer.style.willChange = 'auto';
+  }
 }
 
 // ================= FLOATING BUTTON SHOW/HIDE =================
@@ -911,6 +1015,62 @@ function initMagneticButtons() {
   });
 
   console.log(`✨ Magnetic effects applied`);
+}
+
+// ================= CIRCULAR WIPE EFFECT =================
+function initCircularWipeEffect() {
+  const wipeButtons = document.querySelectorAll('.wipe-btn');
+  
+  wipeButtons.forEach(btn => {
+    const overlay = btn.querySelector('.circular-wipe-overlay');
+    if (!overlay) return;
+    
+    // Set initial state
+    gsap.set(overlay, {
+      clipPath: 'circle(0% at 50% 50%)'
+    });
+    
+    btn.addEventListener('mouseenter', (e) => {
+      // Kill any existing animations immediately
+      gsap.killTweensOf(overlay);
+      
+      // Calculate mouse position relative to button
+      const rect = btn.getBoundingClientRect();
+      const x = ((e.clientX - rect.left) / rect.width) * 100;
+      const y = ((e.clientY - rect.top) / rect.height) * 100;
+      
+      // Start wipe from mouse position with slightly slower timing
+      gsap.fromTo(overlay, {
+        clipPath: `circle(0% at ${x}% ${y}%)`
+      }, {
+        clipPath: `circle(150% at ${x}% ${y}%)`,
+        duration: 0.5,
+        ease: 'power2.inOut',
+        immediateRender: true,
+        overwrite: 'auto'
+      });
+    });
+    
+    btn.addEventListener('mouseleave', (e) => {
+      // Kill animations and start exit immediately
+      gsap.killTweensOf(overlay);
+      
+      // Calculate mouse position for exit animation
+      const rect = btn.getBoundingClientRect();
+      const x = ((e.clientX - rect.left) / rect.width) * 100;
+      const y = ((e.clientY - rect.top) / rect.height) * 100;
+      
+      gsap.to(overlay, {
+        clipPath: `circle(0% at ${x}% ${y}%)`,
+        duration: 0.35,
+        ease: 'power2.inOut',
+        immediateRender: true,
+        overwrite: 'auto'
+      });
+    });
+  });
+  
+  console.log('🎯 Circular wipe effect initialized');
 }
 
 // ================= SLIDE-IN MENU FUNCTIONS =================
